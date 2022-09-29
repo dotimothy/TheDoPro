@@ -66,7 +66,7 @@ GenerateClassCluster=0
 DocumentUniqueId=WXIBYGLC
 
 [Document2]
-DocumentPath=..\Zaya Altium Libraries\Zaya PCB Library.PcbLib
+DocumentPath=..\Libraries\Zaya PCB Library.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -80,10 +80,10 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=BUWKNPEF
 
 [Document3]
-DocumentPath=..\Zaya Altium Libraries\Zaya Schematic Library.SchLib
+DocumentPath=..\Libraries\Zaya Schematic Library.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -97,7 +97,7 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=WNXVGBLJ
 
 [Configuration1]
 Name=Sources
