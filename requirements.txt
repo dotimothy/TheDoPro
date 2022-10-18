@@ -2,3 +2,5 @@ matplotlib
 opencv-python
 numpy
 tk
+jupyter
+scipy
