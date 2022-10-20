@@ -36,17 +36,17 @@ R_avg = nd.uniform_filter(image_R_gray, (block_y, block_x), mode='constant')
 
 
 #Unvectorized
-start = time.time()
-for d in range(0, disp):
-    for r in range(row_bound_L, row_bound_U):
-        for c in range(col_bound_L, col_bound_U):
+# start = time.time()
+# for d in range(0, disp):
+#     for r in range(row_bound_L, row_bound_U):
+#         for c in range(col_bound_L, col_bound_U):
 
-            L_cost = (image_L_gray[r-row_offset:r+row_offset+1, c-column_offset:c+column_offset+1] - L_avg[r, c])
-            R_cost = (image_R_gray[r-row_offset:r+row_offset+1, c-column_offset-d:c+column_offset-d+1] - R_avg[r, c-d])
+#             L_cost = (image_L_gray[r-row_offset:r+row_offset+1, c-column_offset:c+column_offset+1] - L_avg[r, c])
+#             R_cost = (image_R_gray[r-row_offset:r+row_offset+1, c-column_offset-d:c+column_offset-d+1] - R_avg[r, c-d])
 
-            cost[r-row_bound_L, c-col_bound_L, d] = np.sum(L_cost*R_cost)/np.sqrt((np.sum(L_cost**2)*np.sum(R_cost**2)))
-end = time.time()
-print(f'Unvectorized: {end - start} seconds')
+#             cost[r-row_bound_L, c-col_bound_L, d] = np.sum(L_cost*R_cost)/np.sqrt((np.sum(L_cost**2)*np.sum(R_cost**2)))
+# end = time.time()
+# print(f'Unvectorized: {end - start} seconds')
 
 #Vectorized
 start = time.time()
@@ -78,8 +78,8 @@ end = time.time()
 print(f'Vectorized: {end - start} seconds')
 
 plt.figure(figsize=(20, 10))
-plt.subplot(121)
-plt.imshow(cost[:, :, 15], cmap='gray')
-plt.subplot(122)
+# plt.subplot(121)
+# plt.imshow(cost[:, :, 15], cmap='gray')
+# plt.subplot(122)
 plt.imshow(cost_vec[:, :, 15], cmap='gray')
 plt.savefig('result.png')
