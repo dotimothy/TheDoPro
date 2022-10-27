@@ -1,8 +1,10 @@
 import RPi.GPIO as GPIO
 from time import sleep 
 from os import system
-import customStereo as cs
 import cv2 as cv
+import sys
+sys.path.insert(1,'../Vision')
+import customStereo as cs 
 
 freq = 0.1
 
