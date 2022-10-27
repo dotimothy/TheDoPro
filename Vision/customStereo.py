@@ -87,56 +87,81 @@ def multiblock(image_L_gray, image_R_gray, block1_x, block1_y, block2_x, block2_
 
 def readLeft():
     image_L = cv.imread('../Images/left_piano.png',1)
+    image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
     cv.imshow('leftPreview',image_L)
+    cv.waitKey(10)
 
 def readRight():
     image_R = cv.imread('../Images/right_piano.png',1)
     cv.imshow('rightPreview',image_R)
+    cv.waitKey(10)
 
-if __name__ == "__main__":
+def processCapture(algor,downscale):
     image_L = cv.imread('../Images/left_piano.png', 1)
     image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
     image_R = cv.imread('../Images/right_piano.png', 1)
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
-
     image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) + 1e-1
     image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) + 1e-1
+    image_L_gray = cv.resize(image_L_gray,(int(image_L_gray.shape[1]/downscale),int(image_L_gray.shape[0]/downscale)))
+    image_R_gray = cv.resize(image_R_gray,(int(image_R_gray.shape[1]/downscale),int(image_R_gray.shape[0]/downscale)))
+    if(algor == 0): #Cost Block Matching
+        result = vec_cost_block_matching(image_L_gray, image_R_gray, 9, 9, 16)
+        disparity = result[0][:,:,0]
+        disparity = (255*disparity).astype(np.uint8)
+    else: #Multiblock
+        disparity = multiblock(image_L_gray, image_R_gray, 9, 9, 21, 3, 3, 21, 16)
+        disparity = (255*disparity).astype(np.uint8)
+    disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale))
+    cv.imshow('Disparity',cv.applyColorMap(disparity,cv.COLORMAP_JET))
+    #cv.imshow('Disparity',disparity)
+    cv.waitKey(5000)
 
-    scale = 2
-    image_L_gray = cv.resize(image_L_gray,(int(image_L_gray.shape[1]/scale),int(image_L_gray.shape[0]/scale)))
-    image_R_gray = cv.resize(image_R_gray,(int(image_R_gray.shape[1]/scale),int(image_R_gray.shape[0]/scale)))
+if __name__ == "__main__":
+    processCapture(0,4)
+    # image_L = cv.imread('../Images/left_piano.png', 1)
+    # image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
+    # image_R = cv.imread('../Images/right_piano.png', 1)
+    # image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
-    start = time.time() 
-    BM  = vec_cost_block_matching(image_L_gray, image_R_gray, 9, 9, 16)
-    print(f'Vectorized Block Matching: {round(time.time()-start,2)} s')
-    start = time.time()
-    MBM = multiblock(image_L_gray, image_R_gray, 9, 9, 21, 3, 3, 21, 16)
-    print(f'Vectorized Multiblock: {round(time.time()-start,2)} s')
-    
-    #BM = cv.resize(BM, (BM.shape[1]*scale,BM.shape[0]*scale))
-    #MBM = cv.resize(MBM,(MBM.shape[1]*scale,MBM.shape[0]*scale))
-    
-    plt.figure(figsize=(30, 15))
-    plt.subplot(321)
-    plt.imshow(image_L)
-    plt.title('Left Image', fontsize=20)
-    plt.subplot(322)
-    plt.imshow(image_R)
-    plt.title('Right Image', fontsize=20)
-    plt.subplot(323)
-    plt.imshow(image_L_gray, cmap='gray')
-    plt.title('Left Image - Gray', fontsize=20)
-    plt.subplot(324)
-    plt.imshow(image_R_gray, cmap='gray')
-    plt.title('Right Image - Gray', fontsize=20)
-    plt.subplot(325)
-    plt.imshow(BM[0][:, :, 0], cmap='jet')
-    plt.title('Disparity Map (9x9)', fontsize=20)
-    plt.subplot(326)
-    plt.imshow(MBM, cmap='jet')
-    plt.title('Disparity Map (Multi-block)', fontsize=20)
-    plt.tight_layout(w_pad=-60)
-    plt.savefig('result.png')
-   
-    cv.imwrite('cost.png',cv.applyColorMap((255*BM[0][:,:,0]/max(BM)).astype(np.uint8),cv.COLORMAP_JET))
-    #cv.imwrite('multi.png',cv.applyColorMap(MBM.astype(np.uint8),cv.COLORMAP_JET))
+    # image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) + 1e-1
+    # image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) + 1e-1
+
+    # downscale = 2
+    # image_L_gray = cv.resize(image_L_gray,(int(image_L_gray.shape[1]/downscale),int(image_L_gray.shape[0]/downscale)))
+    # image_R_gray = cv.resize(image_R_gray,(int(image_R_gray.shape[1]/downscale),int(image_R_gray.shape[0]/downscale)))
+
+    # start = time.time() 
+    # BM  = vec_cost_block_matching(image_L_gray, image_R_gray, 9, 9, 16)
+    # print(f'Vectorized Block Matching: {round(time.time()-start,2)} s')
+    # start = time.time()
+    # MBM = multiblock(image_L_gray, image_R_gray, 9, 9, 21, 3, 3, 21, 16)
+    # print(f'Vectorized Multiblock: {round(time.time()-start,2)} s')
+
+    # #BM = cv.resize(BM, (BM.shape[1]*downscale,BM.shape[0]*downscale))
+    # #MBM = cv.resize(MBM,(MBM.shape[1]*downscale,MBM.shape[0]*downscale))
+
+    # plt.figure(figsize=(30, 15))
+    # plt.subplot(321)
+    # plt.imshow(image_L)
+    # plt.title('Left Image', fontsize=20)
+    # plt.subplot(322)
+    # plt.imshow(image_R)
+    # plt.title('Right Image', fontsize=20)
+    # plt.subplot(323)
+    # plt.imshow(image_L_gray, cmap='gray')
+    # plt.title('Left Image - Gray', fontsize=20)
+    # plt.subplot(324)
+    # plt.imshow(image_R_gray, cmap='gray')
+    # plt.title('Right Image - Gray', fontsize=20)
+    # plt.subplot(325)
+    # plt.imshow(BM[0][:, :, 0], cmap='jet')
+    # plt.title('Disparity Map (9x9)', fontsize=20)
+    # plt.subplot(326)
+    # plt.imshow(MBM, cmap='jet')
+    # plt.title('Disparity Map (Multi-block)', fontsize=20)
+    # plt.tight_layout(w_pad=-60)
+    # plt.savefig('result.png')
+
+    # # cv.imwrite('cost.png',cv.applyColorMap((255*BM[0][:,:,0]/max(BM)).astype(np.uint8),cv.COLORMAP_JET))
+    # # cv.imwrite('multi.png',cv.applyColorMap(MBM.astype(np.uint8),cv.COLORMAP_JET))
