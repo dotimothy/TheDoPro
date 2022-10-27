@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 from time import sleep 
 from os import system
+import customStereo as cs
+import cv2 as cv
 
 freq = 0.1
 
@@ -56,11 +58,15 @@ def rightPreview(buttons):
 		sleep(freq)
 		updateState(buttons)
 		checkPower(buttons)
+		cs.readRight()
 		changeState = buttons['sel2']['state'] ^ buttons['capture']['state'] 
 	if buttons['sel2']['state']: 
+		cv.destroyAllWindows()
 		print('Change State to Left Preview')
 		leftPreview(buttons)
+		
 	elif buttons['capture']['state']:
+		cv.destroyAllWindows()
 		print('Change State to Capture')
 		capture(buttons)
 
@@ -71,11 +77,15 @@ def leftPreview(buttons):
 		sleep(freq)
 		updateState(buttons)
 		checkPower(buttons)
+		cs.readLeft()
 		changeState = buttons['sel1']['state'] ^ buttons['capture']['state'] 
 	if buttons['sel1']['state']: 
+		cv.destroyAllWindows()
 		print('Change State to Right Preview')
 		rightPreview(buttons)
+		
 	elif buttons['capture']['state']:
+		cv.destroyAllWindows()
 		print('Change State to Capture')
 		capture(buttons)
 
