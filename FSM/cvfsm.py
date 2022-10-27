@@ -30,9 +30,6 @@ def checkPower(buttons):
 	GPIO.cleanup()
 	exit()
 
-def checkSettings(buttons):
-	return buttons['sel1']['state'] & buttons['sel2']['state']
-
 def settings(buttons):
 	changeState = 0 
 	while not changeState:
@@ -59,9 +56,6 @@ def rightPreview(buttons):
 		sleep(freq)
 		updateState(buttons)
 		checkPower(buttons)
-		if(checkSettings(buttons)):
-			settings(buttons)
-			continue
 		changeState = buttons['sel2']['state'] ^ buttons['capture']['state'] 
 	if buttons['sel2']['state']: 
 		print('Change State to Left Preview')
@@ -77,9 +71,6 @@ def leftPreview(buttons):
 		sleep(freq)
 		updateState(buttons)
 		checkPower(buttons)
-		if(checkSettings(buttons)):
-			settings(buttons)
-			continue
 		changeState = buttons['sel1']['state'] ^ buttons['capture']['state'] 
 	if buttons['sel1']['state']: 
 		print('Change State to Right Preview')
