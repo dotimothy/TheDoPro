@@ -20,7 +20,7 @@ def checkPower(buttons):
 		sleep(0.001)
 		if buttons['power']['state']:
 			if(powerCounter % 1000 == 0):
-				print(powerCounter/1000)
+				print(int(powerCounter/1000))
 			powerCounter = powerCounter - 1
 			updateState(buttons)
 		else:
