@@ -93,7 +93,7 @@ def leftPreview(buttons):
 
 def capture(buttons):
 	print('Capturing')
-	processCapture(1,8)
+	cs.processCapture(1,8)
 	rightPreview(buttons)
 
 # Test Driver
