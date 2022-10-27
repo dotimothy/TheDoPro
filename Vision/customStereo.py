@@ -87,13 +87,11 @@ def multiblock(image_L_gray, image_R_gray, block1_x, block1_y, block2_x, block2_
 
 def readLeft():
     image_L = cv.imread('../Images/left_piano.png',1)
-    image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
     cv.imshow('leftPreview',image_L)
     cv.waitKey(10)
 
 def readRight():
     image_R = cv.imread('../Images/right_piano.png',1)
-    image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
     cv.imshow('rightPreview',image_R)
     cv.waitKey(10)
 
