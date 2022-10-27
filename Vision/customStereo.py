@@ -117,6 +117,7 @@ def processCapture(algor,downscale):
     cv.imshow('Disparity',cv.applyColorMap(disparity,cv.COLORMAP_JET))
     #cv.imshow('Disparity',disparity)
     cv.waitKey(5000)
+    cv.destroyAllWindows()
 
 if __name__ == "__main__":
     processCapture(0,4)
