@@ -93,7 +93,7 @@ def readLeft():
 
 def readRight():
     image_R = cv.imread('../Images/right_piano.png',1)
-    image_L = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+    image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
     cv.imshow('rightPreview',image_R)
     cv.waitKey(10)
 
