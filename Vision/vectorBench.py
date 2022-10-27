@@ -14,6 +14,12 @@ image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) + 1e-1
 image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) + 1e-1
 
+scale = 2
+L_dim = (int(image_L_gray.shape[1]/scale),int(image_L_gray.shape[0]/scale))
+R_dim = (int(image_R_gray.shape[1]/scale),int(image_R_gray.shape[0]/scale))
+image_L_gray = cv.resize(image_L_gray,L_dim)
+image_R_gray = cv.resize(image_R_gray,R_dim)
+
 #Parameters
 block_x = 9
 block_y = 9
@@ -76,7 +82,7 @@ for d in range(0, disp):
   cost_vec[:, :, d] = LR_cost/np.sqrt(L_sqr_cost*R_sqr_cost)
 end = time.time() 
 print(f'Vectorized: {end - start} seconds')
-
+cv.imwrite('result.png',cv.applyColorMap(cost_vec[:,:,15].astype(np.uint8),cv.COLORMAP_JET))
 # plt.figure(figsize=(20, 10))
 # # plt.subplot(121)
 # # plt.imshow(cost[:, :, 15], cmap='gray')
