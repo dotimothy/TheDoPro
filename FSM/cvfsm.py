@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep 
 from os import system
 
-freq = 0.01
+freq = 0.1
 
 def setupGPIO(buttons):
 	GPIO.setwarnings(False)
