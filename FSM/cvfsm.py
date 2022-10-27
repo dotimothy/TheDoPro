@@ -10,7 +10,7 @@ def setupGPIO(buttons):
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)
 	for button in buttons: 
-		GPIO.setup(buttons[button]['pin'],GPIO.IN,pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(buttons[button]['pin'],GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
 def updateState(buttons): 
 	for button in buttons: 
