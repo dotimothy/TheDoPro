@@ -15,11 +15,14 @@ def updateState(buttons):
 		buttons[button]['state'] = GPIO.input(buttons[button]['pin'])
 
 def checkPower(buttons):
-	powerCounter = 3000
+	powerCounter = 3250
 	while(powerCounter > 0):
 		sleep(0.001)
 		if buttons['power']['state']:
+			if(powerCounter % 1000 == 0):
+				print(int(powerCounter/1000))
 			powerCounter = powerCounter - 1
+			updateState(buttons)
 		else:
 			return
 	print("Turning Off")
@@ -31,11 +34,11 @@ def checkSettings(buttons):
 	return buttons['sel1']['state'] & buttons['sel2']['state']
 
 def settings(buttons):
-	changeState = 0 
+	changeState = 0
 	while not changeState:
 		changeState = 1
 	rightPreview(buttons)
-	
+
 
 def offState(buttons):
 	print("Hold Power to Turn On")
