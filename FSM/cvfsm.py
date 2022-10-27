@@ -2,9 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep 
 from os import system
 
-# Global Parameters
 freq = 0.001
-desired = 1
 
 def setupGPIO(buttons):
 	GPIO.setwarnings(False)
@@ -17,31 +15,27 @@ def updateState(buttons):
 		buttons[button]['state'] = GPIO.input(buttons[button]['pin'])
 
 def checkPower(buttons):
-	powerCounter = 3250
+	powerCounter = 3000
 	while(powerCounter > 0):
-		sleep(freq)
-		if buttons['power']['state'] == desired:
-			if(powerCounter % 1000 == 0):
-				print(int(powerCounter/1000))
+		sleep(0.001)
+		if buttons['power']['state']:
 			powerCounter = powerCounter - 1
-			updateState(buttons)
 		else:
 			return
 	print("Turning Off")
 	system('clear')
 	GPIO.cleanup()
 	exit()
-	system('sudo shutdown -h now')
 
 def checkSettings(buttons):
-	return buttons['sel1']['state'] == desired & buttons['sel2']['state'] == desired
+	return buttons['sel1']['state'] & buttons['sel2']['state']
 
 def settings(buttons):
-	changeState = 0
+	changeState = 0 
 	while not changeState:
 		changeState = 1
 	rightPreview(buttons)
-
+	
 
 def offState(buttons):
 	print("Hold Power to Turn On")
@@ -65,11 +59,11 @@ def rightPreview(buttons):
 		if(checkSettings(buttons)):
 			settings(buttons)
 			continue
-		changeState = buttons['sel2']['state'] == desired ^ buttons['capture']['state'] == desired
-	if buttons['sel2']['state'] == desired: 
+		changeState = buttons['sel2']['state'] ^ buttons['capture']['state'] 
+	if buttons['sel2']['state']: 
 		print('Change State to Left Preview')
 		leftPreview(buttons)
-	elif buttons['capture']['state'] == desired:
+	elif buttons['capture']['state']:
 		print('Change State to Capture')
 		capture(buttons)
 
@@ -83,11 +77,11 @@ def leftPreview(buttons):
 		if(checkSettings(buttons)):
 			settings(buttons)
 			continue
-		changeState = buttons['sel1']['state'] == desired ^ buttons['capture']['state'] == desired 
-	if buttons['sel1']['state'] == desired: 
+		changeState = buttons['sel1']['state'] ^ buttons['capture']['state'] 
+	if buttons['sel1']['state']: 
 		print('Change State to Right Preview')
 		rightPreview(buttons)
-	elif buttons['capture']['state'] == desired:
+	elif buttons['capture']['state']:
 		print('Change State to Capture')
 		capture(buttons)
 
@@ -102,7 +96,7 @@ if __name__ == '__main__':
 	# pins are physical
 	master = {	
 		'buttons': {
-			'power': {'pin': 5},
+			'power': {'pin': 10},
 			'capture':{'pin': 12}, 
 			'sel1': {'pin': 16},
 			'sel2': {'pin': 18}
