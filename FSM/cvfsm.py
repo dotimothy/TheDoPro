@@ -4,7 +4,7 @@ from os import system
 
 # Global Parameters
 freq = 0.001
-desired = 0
+desired = 1
 
 def setupGPIO(buttons):
 	GPIO.setwarnings(False)
