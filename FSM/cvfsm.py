@@ -99,7 +99,7 @@ if __name__ == '__main__':
 	# pins are physical
 	master = {	
 		'buttons': {
-			'power': {'pin': 10},
+			'power': {'pin': 6},
 			'capture':{'pin': 12}, 
 			'sel1': {'pin': 16},
 			'sel2': {'pin': 18}
