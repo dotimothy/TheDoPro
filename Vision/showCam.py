@@ -1,7 +1,7 @@
 import cv2
 
-leftCam = cv2.VideoCapture(1)
-rightCam = cv2.VideoCapture(2)
+leftCam = cv2.VideoCapture(2)
+rightCam = cv2.VideoCapture(1)
 
 while True:
     leftCheck, leftFrame = leftCam.read()
