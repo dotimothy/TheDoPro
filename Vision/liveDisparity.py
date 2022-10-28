@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 import os
 import numpy as np
+import customStereo as cs
 
 leftCam = cv.VideoCapture(1)
 rightCam = cv.VideoCapture(2)

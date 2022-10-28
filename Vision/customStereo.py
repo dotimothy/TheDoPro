@@ -102,23 +102,20 @@ def processCapture(algor,downscale):
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
     image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) + 1e-1
     image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) + 1e-1
-    image_L_gray = cv.resize(image_L_gray,(int(image_L_gray.shape[1]/downscale),int(image_L_gray.shape[0]/downscale)))
-    image_R_gray = cv.resize(image_R_gray,(int(image_R_gray.shape[1]/downscale),int(image_R_gray.shape[0]/downscale)))
+    image_L_gray = cv.resize(image_L_gray,(int(image_L_gray.shape[1]/downscale),int(image_L_gray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
+    image_R_gray = cv.resize(image_R_gray,(int(image_R_gray.shape[1]/downscale),int(image_R_gray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #Cost Block Matching
         result = vec_cost_block_matching(image_L_gray, image_R_gray, 9, 9, 16)
         disparity = result[0][:,:,0]
-        disparity = (255*disparity).astype(np.uint8)
     else: #Multiblock
         disparity = multiblock(image_L_gray, image_R_gray, 9, 9, 21, 3, 3, 21, 16)
-        disparity = (255*disparity).astype(np.uint8)
-    disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale))
-    cv.imshow('Disparity',cv.applyColorMap(disparity,cv.COLORMAP_JET))
-    #cv.imshow('Disparity',disparity)
+    disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
+    cv.imshow('Disparity',disparity)
     cv.waitKey(5000)
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
-    processCapture(0,4)
+    processCapture(0,2)
     # image_L = cv.imread('../Images/left_piano.png', 1)
     # image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
     # image_R = cv.imread('../Images/right_piano.png', 1)
