@@ -3,7 +3,7 @@ from time import sleep
 from os import system
 import cv2 as cv
 import sys
-sys.path.insert(1,'../Vision')
+sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 import customStereo as cs 
 
 freq = 0.1
@@ -93,7 +93,7 @@ def leftPreview(buttons):
 
 def capture(buttons):
 	print('Capturing')
-	cs.processCapture(1,8)
+	cs.processCapture(1,4)
 	rightPreview(buttons)
 
 # Test Driver
