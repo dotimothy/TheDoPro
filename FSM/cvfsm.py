@@ -1,6 +1,10 @@
 import RPi.GPIO as GPIO
 from time import sleep 
 from os import system
+import cv2 as cv
+import sys
+sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
+import customStereo as cs 
 
 freq = 0.1
 
@@ -15,20 +19,20 @@ def updateState(buttons):
 		buttons[button]['state'] = GPIO.input(buttons[button]['pin'])
 
 def checkPower(buttons):
-	powerCounter = 3000
+	powerCounter = 3250
 	while(powerCounter > 0):
-		sleep(freq/10)
+		sleep(0.001)
 		if buttons['power']['state']:
+			if(powerCounter % 1000 == 0):
+				print(int(powerCounter/1000))
 			powerCounter = powerCounter - 1
+			updateState(buttons)
 		else:
 			return
 	print("Turning Off")
 	system('clear')
 	GPIO.cleanup()
 	exit()
-
-def checkSettings(buttons):
-	return buttons['sel1']['state'] & buttons['sel2']['state']
 
 def settings(buttons):
 	changeState = 0 
@@ -56,14 +60,15 @@ def rightPreview(buttons):
 		sleep(freq)
 		updateState(buttons)
 		checkPower(buttons)
-		if(checkSettings(buttons)):
-			settings(buttons)
-			continue
+		cs.readRight()
 		changeState = buttons['sel2']['state'] ^ buttons['capture']['state'] 
 	if buttons['sel2']['state']: 
+		cv.destroyAllWindows()
 		print('Change State to Left Preview')
 		leftPreview(buttons)
+		
 	elif buttons['capture']['state']:
+		cv.destroyAllWindows()
 		print('Change State to Capture')
 		capture(buttons)
 
@@ -74,21 +79,21 @@ def leftPreview(buttons):
 		sleep(freq)
 		updateState(buttons)
 		checkPower(buttons)
-		if(checkSettings(buttons)):
-			settings(buttons)
-			continue
+		cs.readLeft()
 		changeState = buttons['sel1']['state'] ^ buttons['capture']['state'] 
 	if buttons['sel1']['state']: 
+		cv.destroyAllWindows()
 		print('Change State to Right Preview')
 		rightPreview(buttons)
+		
 	elif buttons['capture']['state']:
+		cv.destroyAllWindows()
 		print('Change State to Capture')
 		capture(buttons)
 
 def capture(buttons):
 	print('Capturing')
-	sleep(2)
-	checkPower(buttons)
+	cs.processCapture(1,4)
 	rightPreview(buttons)
 
 # Test Driver
