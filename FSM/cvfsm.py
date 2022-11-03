@@ -32,6 +32,7 @@ def checkPower(buttons):
 	print("Turning Off")
 	system('clear')
 	GPIO.cleanup()
+	#system('sudo shutdown -h now')
 	exit()
 
 def settings(buttons):
