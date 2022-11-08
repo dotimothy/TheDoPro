@@ -1,9 +1,9 @@
 import cv2
 
-leftCam = cv2.VideoCapture()
-leftCam.open('/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._USB_2.0_camera_SN0001-video-index0')
-rightCam = cv2.VideoCapture()
-rightCam.open('/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._USB_2.0_camera_SN0001-video-index1')
+leftCam = cv2.VideoCapture(1)
+#leftCam.open('/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._USB_2.0_camera_SN0001-video-index0')
+rightCam = cv2.VideoCapture(2)
+#rightCam.open('/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._USB_2.0_camera_SN0001-video-index1')
 
 while True:
     leftCheck, leftFrame = leftCam.read()

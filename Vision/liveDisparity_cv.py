@@ -6,8 +6,8 @@ import os
 import numpy as np
 import customStereo as cs
 
-leftCam = cv.VideoCapture(2)
-rightCam = cv.VideoCapture(1)
+leftCam = cv.VideoCapture(1)
+rightCam = cv.VideoCapture(2)
 
 while True:
 	leftCheck, leftFrame = leftCam.read()
