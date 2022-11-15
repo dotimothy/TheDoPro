@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+import os
+import tkinter
+
+def main():
+	window = tkinter.Tk()
+	window.title("WOL Console")
+	label = tkinter.Label(text="Please Select A Computer to Wake on Lan:",font=("Courier",25))
+	label.grid(row=0,column=1)
+
+	bye = tkinter.Button(text="Exit",command=lambda: chooseDevice(0),font=("Courier",16))
+	bye.grid(row=0,column=2)
+
+	server = tkinter.Button(text="SERVER-TD2020",command=lambda:chooseDevice(1),font=("Courier",16))
+	server.grid(row=1,column=0)
+
+	hp = tkinter.Button(text="DESKTOP-HP2020",command=lambda:chooseDevice(2),font=("Courier",16))
+	hp.grid(row=1,column=1)
+
+	desktop2015 = tkinter.Button(text="DESKTOP-TD2015",command=lambda:chooseDevice(3),font=("Courier",16))
+	desktop2015.grid(row=1,column=2)
+
+	msi = tkinter.Button(text="LAPTOP-MSI",command=lambda:chooseDevice(4),font=("Courier",16))
+	msi.grid(row=2,column=0)
+
+	workstation = tkinter.Button(text="WORKSTATION-TD2020",command=lambda:chooseDevice(5),font=("Courier",16))
+	workstation.grid(row=2,column=1)
+
+	every = tkinter.Button(text="All",command=lambda:chooseDevice(6),font=("Courier",25))
+	every.grid(row=2,column=2)
+
+	window.mainloop()
+
+def chooseDevice(wol):
+    if(wol == 0):
+            print("Goodbye.")
+            exit()
+    elif(wol == 1):
+            print("Turning on SERVER-TD2020 via WOL")
+            os.system("sudo etherwake -i eth0 18:03:73:BD:F7:BC")
+    elif(wol == 2):
+            print("Turning on DESKTOP-HP2020 via WOL")
+            os.system("sudo etherwake -i eth0 2C:27:D7:1D:00:C5")
+    elif(wol == 3):
+            print("Turning on DESKTOP-TD2015 via WOL")
+            os.system("sudo etherwake -i eth0 D8:CB:8A:3C:3A:FF")
+    elif(wol == 4):
+            print("Turning on LAPTOP-MSI via WOL")
+            os.system("sudo etherwake -i eth0 00:D8:61:85:A0:6B")
+    elif(wol == 5):
+            print("Turning on WORKSTATION-TD2020 via WOL")
+            os.system("sudo etherwake -i eth0 2C:F0:5D:71:EF:47")
+    elif(wol == 6):
+            print("Turning on All Computers via WOL")
+            os.system("sudo etherwake -i eth0 00:D8:61:85:A0:6B")
+            os.system("sudo etherwake -i eth0 D8:CB:8A:3C:3A:FF")
+            os.system("sudo etherwake -i eth0 2C:27:D7:1D:00:C5")
+            os.system("sudo etherwake -i eth0 18:03:73:BD:F7:BC")
+            os.system("sudo etherwake -i eth0 2C:F0:5D:71:EF:47")
+
+main()
+
