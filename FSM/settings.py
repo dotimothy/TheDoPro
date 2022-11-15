@@ -10,7 +10,7 @@ def settings(settings):
 	
 	modeLabel = tk.Label(root,text="Disparity Mode: ",font=("Courier",24))
 	modeLabel.grid(row=1,column=1)
-	modes = ['Efficiency','Quality']
+	modes = ['OpenCV','Cost Block','Multiblock']
 	mode = tk.StringVar(root)
 	mode.set(settings['mode'])
 	modeSelection = tk.OptionMenu(root,mode,*modes)

@@ -9,25 +9,25 @@ import settings as settings
 
 freq = 0.1
 
-def setupGPIO(buttons):
+def setupGPIO(master):
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)
-	for button in buttons: 
-		GPIO.setup(buttons[button]['pin'],GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+	for button in master['buttons']: 
+		GPIO.setup(master['buttons'][button]['pin'],GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
-def updateState(buttons): 
-	for button in buttons: 
-		buttons[button]['state'] = GPIO.input(buttons[button]['pin'])
+def updateState(master): 
+	for button in master['buttons']: 
+		master['buttons'][button]['state'] = GPIO.input(master['buttons'][button]['pin'])
 
-def checkPower(buttons):
+def checkPower(master):
 	powerCounter = 3250
 	while(powerCounter > 0):
 		sleep(0.001)
-		if buttons['power']['state']:
+		if master['buttons']['power']['state']:
 			if(powerCounter % 1000 == 0):
 				print(int(powerCounter/1000))
 			powerCounter = powerCounter - 1
-			updateState(buttons)
+			updateState(master)
 		else:
 			return
 	print("Turning Off")
@@ -36,66 +36,71 @@ def checkPower(buttons):
 	#system('sudo shutdown -h now')
 	exit()
 
-def settings(buttons):
-	changeState = 0 
-	while not changeState:
-		changeState = 1
-	rightPreview(buttons)
-	
-
-def offState(buttons):
+def offState(master):
 	print("Hold Power to Turn On")
 	changeState = 0
 	powerCounter = 3
 	while not changeState:
 		sleep(freq)
-		updateState(buttons)
-		powerCounter = powerCounter - 1 if buttons['power']['state'] else 3 
+		updateState(master)
+		powerCounter = powerCounter - 1 if master['buttons']['power']['state'] else 3 
 		changeState = not powerCounter
 	print('Succesfully Turned CV System On!')
-	rightPreview(buttons)
+	rightPreview(master)
 
-def rightPreview(buttons):
+def rightPreview(master):
 	print("Right Preview")
 	changeState = 0
 	while not changeState:
 		sleep(freq)
-		updateState(buttons)
-		checkPower(buttons)
+		updateState(master)
+		checkPower(master)
 		cs.readRight()
-		changeState = buttons['sel2']['state'] ^ buttons['capture']['state'] 
-	if buttons['sel2']['state']: 
+		changeState = master['buttons']['sel2']['state'] ^ master['buttons']['capture']['state'] 
+	if master['buttons']['sel2']['state']: 
 		cv.destroyAllWindows()
 		print('Change State to Left Preview')
 		leftPreview(buttons)
 		
-	elif buttons['capture']['state']:
+	elif master['buttons']['capture']['state']:
 		cv.destroyAllWindows()
 		print('Change State to Capture')
 		capture(buttons)
 
-def leftPreview(buttons):
+def leftPreview(master):
 	print("Left Preview")
 	changeState = 0
 	while not changeState:
 		sleep(freq)
-		updateState(buttons)
-		checkPower(buttons)
+		updateState(master)
+		checkPower(master)
 		cs.readLeft()
-		changeState = buttons['sel1']['state'] ^ buttons['capture']['state'] 
-	if buttons['sel1']['state']: 
+		changeState = master['buttons']['sel1']['state'] ^ master['buttons']['capture']['state'] 
+	if master['buttons']['sel1']['state']: 
 		cv.destroyAllWindows()
 		print('Change State to Right Preview')
-		rightPreview(buttons)
+		rightPreview(master)
 		
-	elif buttons['capture']['state']:
+	elif master['buttons']['capture']['state']:
 		cv.destroyAllWindows()
 		print('Change State to Capture')
-		capture(buttons)
+		capture(master)
 
-def capture(buttons):
+def capture(master):
 	print('Capturing')
-	cs.processCapture(1,4)
+	config = 'OpenCV': {
+			'algor':0
+			'downscale':1
+		},
+		'Cost Block':{
+			'algor':1
+			'downscale':4
+		},
+		'Multiblock':{
+			'algor':2
+			'downscale':4
+		},
+	cs.processCapture(config[master['settings']['mode']['algor']],config[master['settings']['mode']['downscale']])
 	rightPreview(buttons)
 
 # Test Driver
@@ -109,11 +114,11 @@ if __name__ == '__main__':
 			'sel2': {'pin': 18}
 		},
 		'settings': {
-			'mode': 'Efficiency',
+			'mode': 'OpenCV',
 			'rectification': 'Off'
 		}
 	}
 
-	setupGPIO(master['buttons'])
+	setupGPIO(master)
 	updateState(master['buttons'])
 	offState(master['buttons'])

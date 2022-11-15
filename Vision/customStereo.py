@@ -104,10 +104,13 @@ def processCapture(algor,downscale):
     image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) + 1e-1
     image_L_gray = cv.resize(image_L_gray,(int(image_L_gray.shape[1]/downscale),int(image_L_gray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     image_R_gray = cv.resize(image_R_gray,(int(image_R_gray.shape[1]/downscale),int(image_R_gray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
-    if(algor == 0): #Cost Block Matching
+    if(algor == 0): #OpenCV
+        stereo = cv.StereoBM_create(numDisparities=16, blockSize=15)
+        result = stereo.compute(image_L_gray,image_R_gray)
+    elif(algor == 1): #Cost Block Matching
         result = vec_cost_block_matching(image_L_gray, image_R_gray, 9, 9, 16)
         disparity = result[0][:,:,0]
-    else: #Multiblock
+    elif(algor == 2): #Multiblock
         disparity = multiblock(image_L_gray, image_R_gray, 9, 9, 21, 3, 3, 21, 16)
     disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
     cv.imshow('Disparity',disparity)
