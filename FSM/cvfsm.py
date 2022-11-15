@@ -109,7 +109,7 @@ if __name__ == '__main__':
 			'sel2': {'pin': 18}
 		},
 		'settings': {
-			'mode': 'Efficiency'
+			'mode': 'Efficiency',
 			'rectification': 'Off'
 		}
 	}
