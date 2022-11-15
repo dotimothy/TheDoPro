@@ -110,6 +110,7 @@ if __name__ == '__main__':
 		},
 		'settings': {
 			'mode': 'Efficiency'
+			'rectification': 'Off'
 		}
 	}
 
