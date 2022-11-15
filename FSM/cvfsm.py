@@ -5,6 +5,7 @@ import cv2 as cv
 import sys
 sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
 import customStereo as cs 
+import settings as settings
 
 freq = 0.1
 
@@ -108,7 +109,7 @@ if __name__ == '__main__':
 			'sel2': {'pin': 18}
 		},
 		'settings': {
-			'brightness': 50
+			'mode': 'Efficiency'
 		}
 	}
 
