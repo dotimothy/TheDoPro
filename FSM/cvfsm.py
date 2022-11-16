@@ -88,18 +88,18 @@ def leftPreview(master):
 
 def capture(master):
 	print('Capturing')
-	config = 'OpenCV': {
-			'algor':0
+	config = {'OpenCV': {
+			'algor':0,
 			'downscale':1
 		},
 		'Cost Block':{
-			'algor':1
+			'algor':1,
 			'downscale':4
 		},
 		'Multiblock':{
-			'algor':2
+			'algor':2,
 			'downscale':4
-		},
+		}}
 	cs.processCapture(config[master['settings']['mode']['algor']],config[master['settings']['mode']['downscale']])
 	rightPreview(buttons)
 
