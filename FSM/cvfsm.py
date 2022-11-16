@@ -100,9 +100,9 @@ def capture(master):
 			'algor':2,
 			'downscale':4
 		}}
-	image_L = cv.imread('../Images/left_piano.png', 1)
+	image_L = cv.imread('../Images/left_piano.png', 0)
 	image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-	image_R = cv.imread('../Images/right_piano.png', 1)
+	image_R = cv.imread('../Images/right_piano.png', 0)
 	image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
 	image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) 
