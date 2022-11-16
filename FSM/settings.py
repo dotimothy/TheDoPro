@@ -1,6 +1,16 @@
 import tkinter as tk
+import cv2 as cv
 
-def settings(settings):
+def activateSettings(setting): 
+	root = tk.Tk()
+	root.title('Settings')
+	tk.Button(root,text="Settings",font=("Courier",24),command=lambda:configSettings(setting,root)).pack()
+	root.mainloop()
+
+
+def configSettings(settings,act):
+	act.destroy()
+	cv.destroyAllWindows()
 	root = tk.Tk()
 	root.title('Settings')
 	root.geometry('640x480')
@@ -41,4 +51,4 @@ def updateSettings(settings,mode,rectification):
 
 if __name__ == '__main__':
 	setting = {'mode':'Efficiency','rectification':'On'}
-	settings(setting)
+	activateSettings(setting)
