@@ -105,8 +105,6 @@ def capture(master):
 	image_R = cv.imread('../Images/right_piano.png', 0)
 	image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
-	image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) 
-	image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) 
 	cs.processCapture(image_L_gray,image_R_gray,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
 	rightPreview(master)
 
