@@ -1,0 +1,12 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [DoPro.PrjPcb]
+   Generated File[DoPro PCB.TXT]
+   Generated File[DoPro PCB.LDP]
+   Generated File[DoPro PCB.DRR]
+
+
+Files Generated   : 3
+Documents Printed : 0
+
+Finished Output Generation At 10:59:41 PM On 11/15/2022

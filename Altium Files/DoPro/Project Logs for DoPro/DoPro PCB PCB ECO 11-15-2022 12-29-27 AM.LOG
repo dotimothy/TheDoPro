@@ -1,0 +1,23 @@
+Removed Pin From Net: NetName=NetD1_CATH Pin=D1-1
+Removed Pin From Net: NetName=NetD1_ANOD Pin=D1-2
+Removed Pin From Net: NetName=NetD2_CATH Pin=D2-1
+Removed Pin From Net: NetName=NetD2_ANOD Pin=D2-2
+Removed Pin From Net: NetName=NetD3_CATH Pin=D3-1
+Removed Pin From Net: NetName=NetD3_ANOD Pin=D3-2
+Removed Pin From Net: NetName=MOSI Pin=U3-19
+Removed Pin From Net: NetName=MISO Pin=U3-21
+Removed Pin From Net: NetName=SCLK Pin=U3-23
+Removed Pin From Net: NetName=CS Pin=U3-26
+Change Component Designator: OldDesignator=B+ NewDesignator=TP1
+Change Component Designator: OldDesignator=B- NewDesignator=TP2
+Add Pin To Net: Unknown Pin: Pin D1-ANOD
+Add Pin To Net: Unknown Pin: Pin D1-CATH
+Add Pin To Net: Unknown Pin: Pin D2-ANOD
+Add Pin To Net: Unknown Pin: Pin D2-CATH
+Add Pin To Net: Unknown Pin: Pin D3-ANOD
+Add Pin To Net: Unknown Pin: Pin D3-CATH
+Added Pin To Net: NetName=MISO Pin=U3-35
+Added Pin To Net: NetName=CS Pin=U3-36
+Added Pin To Net: NetName=MOSI Pin=U3-38
+Added Pin To Net: NetName=SCLK Pin=U3-40
+Added Room: Name=DoPro Schematic
