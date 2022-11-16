@@ -55,7 +55,7 @@ def rightPreview(master):
 		sleep(freq)
 		updateState(master)
 		checkPower(master)
-		activateSettings(master['settings'])
+		settings.activateSettings(master['settings'])
 		cs.readRight()
 		changeState = master['buttons']['sel2']['state'] ^ master['buttons']['capture']['state'] 
 	if master['buttons']['sel2']['state']: 
@@ -75,7 +75,7 @@ def leftPreview(master):
 		sleep(freq)
 		updateState(master)
 		checkPower(master)
-		activateSettings(master['settings'])
+		settings.activateSettings(master['settings'])
 		cs.readLeft()
 		changeState = master['buttons']['sel1']['state'] ^ master['buttons']['capture']['state'] 
 	if master['buttons']['sel1']['state']: 
