@@ -60,12 +60,12 @@ def rightPreview(master):
 	if master['buttons']['sel2']['state']: 
 		cv.destroyAllWindows()
 		print('Change State to Left Preview')
-		leftPreview(buttons)
+		leftPreview(master)
 		
 	elif master['buttons']['capture']['state']:
 		cv.destroyAllWindows()
 		print('Change State to Capture')
-		capture(buttons)
+		capture(master)
 
 def leftPreview(master):
 	print("Left Preview")
