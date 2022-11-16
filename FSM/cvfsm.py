@@ -100,7 +100,7 @@ def capture(master):
 			'algor':2,
 			'downscale':4
 		}}
-	cs.processCapture(config[master['settings']['mode']['algor']],config[master['settings']['mode']['downscale']])
+	cs.processCapture(config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
 	rightPreview(buttons)
 
 # Test Driver
