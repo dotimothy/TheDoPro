@@ -114,7 +114,7 @@ if __name__ == '__main__':
 			'sel2': {'pin': 18}
 		},
 		'settings': {
-			'mode': 'OpenCV',
+			'mode': 'Cost Block',
 			'rectification': 'Off'
 		}
 	}
