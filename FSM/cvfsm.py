@@ -120,5 +120,5 @@ if __name__ == '__main__':
 	}
 
 	setupGPIO(master)
-	updateState(master['buttons'])
-	offState(master['buttons'])
+	updateState(master)
+	offState(master)
