@@ -96,8 +96,8 @@ def readRight():
     cv.waitKey(10)
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
-    leftFrameGray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY)
-    rightFrameGray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY)
+    leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
+    rightFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
     if(algor != 0):
         leftFrameGray = leftFrameGray + 1e-1
         rightFrameGray = rightFrameGray + 1e-1
