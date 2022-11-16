@@ -100,8 +100,15 @@ def capture(master):
 			'algor':2,
 			'downscale':4
 		}}
-	cs.processCapture(config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
-	rightPreview(buttons)
+	image_L = cv.imread('../Images/left_piano.png', 1)
+    image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
+    image_R = cv.imread('../Images/right_piano.png', 1)
+    image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+
+    image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY) 
+    image_R_gray = cv.cvtColor(image_R, cv.COLOR_BGR2GRAY) 
+	cs.processCapture(image_L_gray,image_R_grayconfig[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
+	rightPreview(master)
 
 # Test Driver
 if __name__ == '__main__':
