@@ -115,9 +115,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
-    cv.imshow('Disparity',disparity)
-    cv.waitKey(5000)
-    cv.destroyAllWindows()
+    return disparity
 
 if __name__ == "__main__":
     image_L = cv.imread('../Images/left_piano.png', 1)
@@ -125,7 +123,9 @@ if __name__ == "__main__":
     image_R = cv.imread('../Images/right_piano.png', 1)
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
-    processCapture(image_L,image_R,0,1)
+    test = processCapture(image_L,image_R,1,8)
+    cv.imshow('result',test)
+    cv.waitKey(3000)
     # image_L = cv.imread('../Images/left_piano.png', 1)
     # image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
     # image_R = cv.imread('../Images/right_piano.png', 1)
