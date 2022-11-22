@@ -95,7 +95,7 @@ def turnOnSave(master):
 	master['settings']['save'] = 'On'
 
 def openGallery(directory):
-	os.system(f'explorer.exe {os.getcwd()}\\results')
+	os.system(f'explorer{os.getcwd()}\\results')
 
 def updateState(master,state):
 	master['settings']['state'] = state
