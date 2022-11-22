@@ -1,7 +1,6 @@
 from time import sleep, localtime
 import os
 import cv2 as cv
-import customStereo as cs 
 import tkinter as tk
 from PIL import Image, ImageTk
 import sys
@@ -11,7 +10,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-
+import customStereo as cs 
 
 # GPIO Functions 
 
@@ -65,7 +64,7 @@ def imagePreview(root,master,lbl):
 		},
 		'Multiblock':{
 			'algor':2,
-			'downscale':4
+			'downscale':2
 		}}
 		image_L = cs.readLeft(0)
 		image_R = cs.readRight(0)
@@ -110,7 +109,7 @@ def updateState(master,state):
 
 def saveImage(im,outputDir):
 	current = localtime()
-	outputPath = f'{outputDir}/{current.tm_mday}{current.tm_mon}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.jpg'
+	outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.jpg'
 	cv.imwrite(outputPath,cv.cvtColor(im,cv.COLOR_RGB2BGR))
 	root = tk.Tk()
 	root.title('Saving')
