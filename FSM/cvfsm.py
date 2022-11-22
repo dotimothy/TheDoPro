@@ -9,6 +9,8 @@ import customStereo as cs
 import tkinter as tk
 from PIL import Image, ImageTk
 
+# GPIO Functions 
+
 freq = 0.1
 
 def setupGPIO(master):
@@ -17,7 +19,7 @@ def setupGPIO(master):
 	for button in master['buttons']: 
 		GPIO.setup(master['buttons'][button]['pin'],GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
-def updateState(master): 
+def updateButtonState(master): 
 	for button in master['buttons']: 
 		master['buttons'][button]['state'] = GPIO.input(master['buttons'][button]['pin'])
 
@@ -29,7 +31,7 @@ def checkPower(master):
 			if(powerCounter % 1000 == 0):
 				print(int(powerCounter/1000))
 			powerCounter = powerCounter - 1
-			updateState(master)
+			updateButtonState(master)
 		else:
 			return
 	print("Turning Off")
@@ -38,88 +40,18 @@ def checkPower(master):
 	#system('sudo shutdown -h now')
 	exit()
 
-# Simulated Off State 
-def offState(master):
-	print("Hold Power to Turn On")
-	changeState = 0
-	powerCounter = 3
-	while not changeState:
-		sleep(freq)
-		updateState(master)
-		powerCounter = powerCounter - 1 if master['buttons']['power']['state'] else 3 
-		changeState = not powerCounter
-	print('Succesfully Turned CV System On!')
-	rightPreview(master)
+# FSM Functions
 
-def rightPreview(master,prev):
-	if(prev != None):
-		prev.destroy()
-	print("Right Preview")
-	root = tk.Tk()
-	root.title('PictureThis! (Right Preview)')
-	right = cv.cvtColor(cv.imread('../Images/right_piano.png'),cv.COLOR_BGR2RGB)
-	imTk = ImageTk.PhotoImage(image=Image.fromarray(right))
-	lbl = tk.Label(root,image=imTk)
-	lbl.grid(row=1,column=1)
-	tk.Button(root,text="Left Preview",font=("Courier",24),command=lambda:leftPreview(master,root)).grid(row=2,column=1)
-	tk.Button(root,text="Capture",font=("Courier",24),command=lambda:capture(master,root)).grid(row=2,column=2)
-	tk.Button(root,text="Settings",font=("Courier",24),command=lambda:configSettings(master,root)).grid(row=2,column=3)
-	root.mainloop()
-
-	# changeState = 0
-	# while not changeState:
-	# 	sleep(freq)
-	# 	updateState(master)
-	# 	checkPower(master)
-	# 	settings.activateSettings(master['settings'])
-	# 	cs.readRight()
-	# 	changeState = master['buttons']['sel2']['state'] ^ master['buttons']['capture']['state'] 
-	# if master['buttons']['sel2']['state']: 
-	# 	cv.destroyAllWindows()
-	# 	print('Change State to Left Preview')
-	# 	leftPreview(master)
-	# elif master['buttons']['capture']['state']:
-	# 	cv.destroyAllWindows()
-	# 	print('Change State to Capture')
-	# 	capture(master)
-
-def leftPreview(master,prev):
-	if(prev != None):
-		prev.destroy()
-	print("Left Preview")
-	root = tk.Tk()
-	root.title('PictureThis! (Left Preview)')
-	left = cv.cvtColor(cv.imread('../Images/left_piano.png'),cv.COLOR_BGR2RGB)
-	imTk = ImageTk.PhotoImage(image=Image.fromarray(left))
-	lbl = tk.Label(root,image=imTk)
-	lbl.grid(row=1,column=1)
-	tk.Button(root,text="Right Preview",font=("Courier",24),command=lambda:rightPreview(master,root)).grid(row=2,column=1)
-	tk.Button(root,text="Capture",font=("Courier",24),command=lambda:capture(master,root)).grid(row=1,column=2)
-	tk.Button(root,text="Settings",font=("Courier",24),command=lambda:configSettings(master['settings'],root)).grid(row=1,column=3)
-	root.mainloop()
-	# changeState = 0
-	# while not changeState:
-	# 	sleep(freq)
-	# 	updateState(master)
-	# 	checkPower(master)
-	# 	settings.activateSettings(master['settings'])
-	# 	cs.readLeft()
-	# 	changeState = master['buttons']['sel1']['state'] ^ master['buttons']['capture']['state'] 
-	# if master['buttons']['sel1']['state']: 
-	# 	cv.destroyAllWindows()
-	# 	print('Change State to Right Preview')
-	# 	rightPreview(master)
-		
-	# elif master['buttons']['capture']['state']:
-	# 	cv.destroyAllWindows()
-	# 	print('Change State to Capture')
-	# 	capture(master)
-
-def capture(master,prev):
-	if(prev != None):
-		prev.destroy()
-	print('Capturing')
-	config = {'OpenCV': {
+# Main Window Function
+def imagePreview(root,master,lbl):
+	root.title(f'TheDoPro ({master["settings"]["state"]})')
+	if(master['settings']['state'] == 'Right'):
+		im = cs.readRight(0)
+	elif(master['settings']['state'] == 'Left'):
+		im = cs.readLeft(0)
+	elif(master['settings']['state'] == 'Capture'):
+		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
+		config = {'OpenCV': {
 			'algor':0,
 			'downscale':1
 		},
@@ -131,32 +63,32 @@ def capture(master,prev):
 			'algor':2,
 			'downscale':4
 		}}
-	if(master['settings']['flash'] == 'On'):
-		pass
-		#turn on flash
-	image_L = cv.imread('../Images/left_piano.png', 0)
-	image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-	image_R = cv.imread('../Images/right_piano.png', 0)
-	image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
-
-	result = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
-	#turn off flash
+		image_L = cs.readLeft(0)
+		image_R = cs.readRight(0)
+		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale']) 
+	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
+	lbl.imtk = imTk
+	lbl.configure(image=imTk)
+	lbl.after(250,imagePreview,root,master,lbl)
 	
-	# root = tk.Tk()
-	# root.title('PictureThis! (Disparity)')
-	# imTk = ImageTk.PhotoImage(image=Image.fromarray(result))
-	# lbl = tk.Label(root,image=imTk)
-	# lbl.pack()
-	# root.after(3000,lambda:root.destroy())
-	# root.mainloop()
-	cv.imshow('result',result)
-	cv.waitKey(3000)
-	cv.destroyAllWindows()
-	rightPreview(master,None)
+def setupPreview(root,master,lbl):
+	lbl.grid(row=1,column=1)
+	tk.Button(root,text="Change Camera",font=("Courier",24),command=lambda:changeCamera(master)).grid(row=2,column=1)
+	tk.Button(root,text="Capture",font=("Courier",24),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
+	tk.Button(root,text="Settings",font=("Courier",24),command=lambda:configSettings(master)).grid(row=2,column=3)
 
-def configSettings(master,prev):
-	prev.destroy()
-	cv.destroyAllWindows()
+def changeCamera(master):
+	if(master['settings']['state'] == 'Right'):
+		master['settings']['state'] = 'Left'
+	else: 
+		master['settings']['state'] = 'Right'
+	print(f"Updated Window State to {master['settings']['state']}")
+
+def updateState(master,state):
+	master['settings']['state'] = state
+	print(f"Updated Window State to {master['settings']['state']}")
+
+def configSettings(master):
 	root = tk.Tk()
 	root.title('Settings')
 	root.geometry('640x480')
@@ -193,18 +125,11 @@ def configSettings(master,prev):
 	
 	root.mainloop()
 
-def updateSettings(master,mode,rectification,flash,menu): 
-	menu.destroy()
+def updateSettings(master,mode,rectification,flash,menu):
 	master['settings']['mode'] = mode
 	master['settings']['rectification'] = rectification
 	master['settings']['flash'] = flash
-	root = tk.Tk()
-	root.title('Updated Settings: ')
-	tk.Label(root,text="Updated Settings: ",font=("Courier",30)).pack()
-	tk.Label(root,text=f"Disparity Mode: {master['settings']['mode']}",font=("Courier",24)).pack()
-	tk.Label(root,text=f"Rectification: {master['settings']['rectification']}",font=("Courier",24)).pack()
-	tk.Label(root,text=f"Flash: {master['settings']['flash']}",font=("Courier",24)).pack()
-	root.after(3000,lambda:rightPreview(master,root))
+	menu.destroy()
 
 # Test Driver
 if __name__ == '__main__':
@@ -217,6 +142,7 @@ if __name__ == '__main__':
 			'sel2': {'pin': 18}
 		},
 		'settings': {
+			'state': 'Right',
 			'mode': 'Cost Block',
 			'rectification': 'Off',
 			'flash': 'Off'
@@ -224,6 +150,10 @@ if __name__ == '__main__':
 	}
 
 	#setupGPIO(master)
-	#updateState(master)
+	#updateButtonState(master)
 	#offState(master)
-	rightPreview(master,None)
+	root = tk.Tk()
+	lbl = tk.Label(root)
+	setupPreview(root,master,lbl)
+	imagePreview(root,master,lbl)
+	root.mainloop()

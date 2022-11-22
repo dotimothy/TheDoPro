@@ -1,9 +1,12 @@
 import PIL
 import matplotlib.pyplot as plt
+from matplotlib.pylab import cm
 import cv2 as cv
 import time
 import numpy as np
 from scipy import ndimage as nd
+from multiprocessing import Process, Queue
+from os import cpu_count
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
@@ -85,15 +88,99 @@ def multiblock(image_L_gray, image_R_gray, block1_x, block1_y, block2_x, block2_
 
     return triblock
 
-def readLeft():
-    image_L = cv.imread('../Images/left_piano.png',1)
-    cv.imshow('leftPreview',image_L)
-    cv.waitKey(10)
+def costco_r_us(queue, disp_idx, num_disp, procs,image_R_gray,row_bound_U,row_bound_L,col_bound_U,col_bound_L,idx,L_string,bead,R_avg,L_residual,L2_cost):
 
-def readRight():
-    image_R = cv.imread('../Images/right_piano.png',1)
-    cv.imshow('rightPreview',image_R)
-    cv.waitKey(10)
+    # Disp to run
+    disps = range(disp_idx, num_disp, procs)
+
+    # Define Vectorization Cost Function
+    cost_vec = np.empty((row_bound_U-row_bound_L, col_bound_U-col_bound_L, len(disps)))
+
+    # Computing disparity at specified index
+    R_string = (idx - disp_idx).flatten()
+    R_braid  = L_string + bead
+    R_cost_str = (image_R_gray).flatten()[R_braid.flatten()].reshape(R_braid.shape)
+    R_avg_str = R_avg.flatten()[R_string.flatten()]
+    R_residual = (R_cost_str - R_avg_str)
+    R2_cost = (R_residual**2).sum(axis=0).reshape(idx.shape)
+    LR_cost_str = L_residual*R_residual
+    LR_cost = LR_cost_str.sum(axis=0).reshape(idx.shape)
+    cost_vec = LR_cost/np.sqrt(L2_cost*R2_cost)
+
+    #Return calculated disparity to queue
+    return queue.put(cost_vec)
+
+def mp_cost_block(image_L_gray, image_R_gray, block_x, block_y, disp, procs):
+
+    # Define Multiprocessing
+    q = Queue()
+    disp_map = []
+    processes = []
+
+    # Image Dimension Specifications
+    column_offset = np.floor(block_x/2).astype(int)
+    row_offset = np.floor(block_y/2).astype(int)
+
+    col_bound_L = column_offset + disp
+    col_bound_U = image_L_gray.shape[1] - column_offset
+    row_bound_L = row_offset
+    row_bound_U = image_L_gray.shape[0] - row_offset
+    rsize = image_L_gray.shape[1]
+
+    # Define Vectorization Cost Function
+    cost_vec = np.empty((row_bound_U-row_bound_L, col_bound_U-col_bound_L, procs))
+
+    # Average Image
+    L_avg = nd.uniform_filter(image_L_gray, (block_y, block_x), mode='constant')
+    R_avg = nd.uniform_filter(image_R_gray, (block_y, block_x), mode='constant')
+
+    # Define indicies
+    idx = (np.arange(row_bound_L, row_bound_U)*rsize + \
+            np.arange(col_bound_L, col_bound_U).reshape(-1, 1)).transpose()
+    bead = (np.arange(-row_offset, row_offset+1)*rsize + \
+            np.arange(-column_offset, column_offset+1).reshape(-1, 1)).reshape(-1, 1)
+
+    # Perform cost caluclation on left image
+    L_string = idx.flatten()
+    L_braid  = L_string + bead
+    L_cost_str = (image_L_gray).flatten()[L_braid.flatten()].reshape(L_braid.shape)
+    L_avg_str = L_avg.flatten()[L_string.flatten()]
+    L_residual = (L_cost_str - L_avg_str)
+    L2_cost = (L_residual**2).sum(axis=0).reshape(idx.shape)
+
+    for i in range(0, procs):
+        p = Process(target=costco_r_us, args = [q, i, disp, procs,image_R_gray,row_bound_U,row_bound_L,col_bound_U,col_bound_L,idx,L_string,bead,R_avg,L_residual,L2_cost])
+        p.start()
+        processes.append(p)
+
+    i = 0
+    for p in processes:
+        cost_vec[:, :, i] = q.get()
+        i = i + 1
+
+    for p in processes:
+        p.join()
+
+    cost = np.max(cost_vec, axis=2)
+
+    return cost
+
+
+# Assume Left is index 0, Right is index 1
+def readLeft(mode):
+    if(mode == 0): #Dev, Will Be an Image
+        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
+    elif(mode == 1): #Webcam
+        leftCam = cv.VideoCapture(0)
+        return leftCam.read()
+    
+
+def readRight(mode):
+    if(mode == 0): #Dev, Will Be an Image
+        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
+    elif(mode == 1): #Webcam
+        rightCam = cv.VideoCapture(1)
+        return rightCam.read()
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
@@ -105,16 +192,22 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV
-        stereo = cv.StereoBM_create(numDisparities=16, blockSize=15)
+        stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)
-        disparity = cv.applyColorMap((disparity).astype(np.uint8),cv.COLORMAP_JET)
+        disparity = (disparity/1024).astype(np.float)
     elif(algor == 1): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]
     elif(algor == 2): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
+    elif(algor == 3): #Multiproces Cost Block
+        disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 16, cpu_count())
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
+    if(algor == 0):
+        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
+    else:
+        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 if __name__ == "__main__":
@@ -123,9 +216,11 @@ if __name__ == "__main__":
     image_R = cv.imread('../Images/right_piano.png', 1)
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
-    test = processCapture(image_L,image_R,1,8)
+    start = time.time()
+    test = processCapture(image_L,image_R,3,4)
+    print(f'Finished in {time.time() - start} seconds')
     cv.imshow('result',test)
-    cv.waitKey(3000)
+    cv.waitKey(2000)
     # image_L = cv.imread('../Images/left_piano.png', 1)
     # image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
     # image_R = cv.imread('../Images/right_piano.png', 1)
