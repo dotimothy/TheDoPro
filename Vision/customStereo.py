@@ -194,6 +194,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     if(algor == 0): #OpenCV
         stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)
+        disparity = (disparity).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 8)
         disparity = result[0][:,:,0]
@@ -204,7 +205,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
     if(algor == 0):
-        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*256),cv.COLOR_RGBA2BGR)
+        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     else:
         disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
