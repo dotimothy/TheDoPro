@@ -1,13 +1,17 @@
-#import RPi.GPIO as GPIO
 from time import sleep, localtime
 import os
 import cv2 as cv
-import sys
-#sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
-sys.path.insert(1,'../Vision')
 import customStereo as cs 
 import tkinter as tk
 from PIL import Image, ImageTk
+import sys
+
+if(sys.platform == 'linux' or sys.platform == 'linux2'):
+	import RPi.GPIO as GPIO
+	sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
+else: 
+	sys.path.insert(1,'../Vision')
+
 
 # GPIO Functions 
 
@@ -95,7 +99,10 @@ def turnOnSave(master):
 	master['settings']['save'] = 'On'
 
 def openGallery(directory):
-	os.system(f'explorer{os.getcwd()}\\results')
+	if(sys.platform == 'win32'):
+		os.system(f'explorer {os.getcwd()}\\results')
+	elif(sys.platform == 'linux' or sys.platform == 'linux2'):
+		os.system(f'pcmanfm {os.getcwd()}/results')
 
 def updateState(master,state):
 	master['settings']['state'] = state
