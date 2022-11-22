@@ -196,12 +196,12 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = stereo.compute(leftFrameGray,rightFrameGray)
         disparity = (disparity/1024).astype(np.float)
     elif(algor == 1): #Cost Block Matching
-        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
+        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 64)
         disparity = result[0][:,:,0]
     elif(algor == 2): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
     elif(algor == 3): #Multiproces Cost Block
-        disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 16, cpu_count())
+        disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 64, cpu_count())
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
     if(algor == 0):
@@ -217,7 +217,7 @@ if __name__ == "__main__":
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
     start = time.time()
-    test = processCapture(image_L,image_R,3,4)
+    test = processCapture(image_L,image_R,1,4)
     print(f'Finished in {time.time() - start} seconds')
     cv.imshow('result',test)
     cv.waitKey(2000)

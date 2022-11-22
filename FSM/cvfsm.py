@@ -1,6 +1,6 @@
 #import RPi.GPIO as GPIO
-from time import sleep 
-from os import system
+from time import sleep, localtime
+import os
 import cv2 as cv
 import sys
 #sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
@@ -37,7 +37,7 @@ def checkPower(master):
 	print("Turning Off")
 	system('clear')
 	GPIO.cleanup()
-	#system('sudo shutdown -h now')
+	#os.system('sudo shutdown -h now')
 	exit()
 
 # FSM Functions
@@ -66,6 +66,11 @@ def imagePreview(root,master,lbl):
 		image_L = cs.readLeft(0)
 		image_R = cs.readRight(0)
 		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale']) 
+	if(master['settings']['save'] == 'On'):
+		if(not os.path.exists('./results')):
+			os.mkdir('./results')
+		saveImage(im,'./results')
+		master['settings']['save'] = 'Off'
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
@@ -74,6 +79,8 @@ def imagePreview(root,master,lbl):
 def setupPreview(root,master,lbl):
 	lbl.grid(row=1,column=1)
 	tk.Button(root,text="Change Camera",font=("Courier",24),command=lambda:changeCamera(master)).grid(row=2,column=1)
+	tk.Button(root,text="Save Image",font=("Courier",24),command=lambda:turnOnSave(master)).grid(row=1,column=2)
+	tk.Button(root,text="Gallery",font=("Courier",24),command=lambda:openGallery('results')).grid(row=1,column=3)
 	tk.Button(root,text="Capture",font=("Courier",24),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
 	tk.Button(root,text="Settings",font=("Courier",24),command=lambda:configSettings(master)).grid(row=2,column=3)
 
@@ -84,9 +91,24 @@ def changeCamera(master):
 		master['settings']['state'] = 'Right'
 	print(f"Updated Window State to {master['settings']['state']}")
 
+def turnOnSave(master):
+	master['settings']['save'] = 'On'
+
+def openGallery(directory):
+	os.system(f'explorer.exe {os.getcwd()}\\results')
+
 def updateState(master,state):
 	master['settings']['state'] = state
 	print(f"Updated Window State to {master['settings']['state']}")
+
+def saveImage(im,outputDir):
+	current = localtime()
+	outputPath = f'{outputDir}/{current.tm_mday}{current.tm_mon}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.jpg'
+	cv.imwrite(outputPath,cv.cvtColor(im,cv.COLOR_RGB2BGR))
+	root = tk.Tk()
+	root.title('Saving')
+	tk.Label(root,text=f'Saved Output to {outputPath}',font=("Courier",24)).pack()
+	root.after(2000,root.destroy)
 
 def configSettings(master):
 	root = tk.Tk()
@@ -145,7 +167,8 @@ if __name__ == '__main__':
 			'state': 'Right',
 			'mode': 'Cost Block',
 			'rectification': 'Off',
-			'flash': 'Off'
+			'flash': 'Off',
+			'save': 'Off'
 		}
 	}
 
@@ -154,6 +177,7 @@ if __name__ == '__main__':
 	#offState(master)
 	root = tk.Tk()
 	lbl = tk.Label(root)
+	im = None
 	setupPreview(root,master,lbl)
 	imagePreview(root,master,lbl)
 	root.mainloop()
