@@ -8,6 +8,9 @@ from scipy import ndimage as nd
 from multiprocessing import Process, Queue
 from os import cpu_count
 
+leftCam = cv.VideoCapture(0)
+rightCam = cv.VideoCapture(2)
+
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
     # Image Dimension Specifications
@@ -171,7 +174,7 @@ def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        leftCam = cv.VideoCapture(0)
+        
         return leftCam.read()
     
 
@@ -179,7 +182,6 @@ def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        rightCam = cv.VideoCapture(2)
         return rightCam.read()
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
