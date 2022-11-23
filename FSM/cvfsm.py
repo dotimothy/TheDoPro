@@ -49,9 +49,9 @@ def checkPower(master):
 def imagePreview(root,master,lbl):
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
-		im = cs.readRight(0)
+		im = cs.readRight(1)
 	elif(master['settings']['state'] == 'Left'):
-		im = cs.readLeft(0)
+		im = cs.readLeft(1)
 	elif(master['settings']['state'] == 'Capture'):
 		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
 		config = {'OpenCV': {
