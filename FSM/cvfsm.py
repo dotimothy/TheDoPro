@@ -81,11 +81,11 @@ def imagePreview(root,master,lbl):
 	
 def setupPreview(root,master,lbl):
 	lbl.grid(row=1,column=1)
-	tk.Button(root,text="Change Camera",font=("Courier",24),command=lambda:changeCamera(master)).grid(row=2,column=1)
-	tk.Button(root,text="Save Image",font=("Courier",24),command=lambda:turnOnSave(master)).grid(row=1,column=2)
-	tk.Button(root,text="Gallery",font=("Courier",24),command=lambda:openGallery('results')).grid(row=1,column=3)
-	tk.Button(root,text="Capture",font=("Courier",24),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
-	tk.Button(root,text="Settings",font=("Courier",24),command=lambda:configSettings(master)).grid(row=2,column=3)
+	tk.Button(root,text="Change Camera",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1)
+	tk.Button(root,text="Save Image",font=("Courier",28),command=lambda:turnOnSave(master)).grid(row=1,column=2)
+	tk.Button(root,text="Gallery",font=("Courier",28),command=lambda:openGallery('results')).grid(row=1,column=3)
+	tk.Button(root,text="Capture",font=("Courier",28),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
+	tk.Button(root,text="Settings",font=("Courier",28),command=lambda:configSettings(master)).grid(row=2,column=3)
 
 def changeCamera(master):
 	if(master['settings']['state'] == 'Right'):
@@ -113,7 +113,7 @@ def saveImage(im,outputDir):
 	cv.imwrite(outputPath,cv.cvtColor(im,cv.COLOR_RGB2BGR))
 	root = tk.Tk()
 	root.title('Saving')
-	tk.Label(root,text=f'Saved Output to {outputPath}',font=("Courier",24)).pack()
+	tk.Label(root,text=f'Saved Output to {outputPath}',font=("Courier",28)).pack()
 	root.after(2000,root.destroy)
 
 def configSettings(master):
@@ -124,7 +124,7 @@ def configSettings(master):
 	title = tk.Label(root,text='Settings',font=("Courier",30))
 	title.grid(row=0,column=1)
 	
-	modeLabel = tk.Label(root,text="Disparity Mode: ",font=("Courier",24))
+	modeLabel = tk.Label(root,text="Disparity Mode: ",font=("Courier",28))
 	modeLabel.grid(row=1,column=1)
 	modes = ['OpenCV','Cost Block','Multiblock']
 	mode = tk.StringVar(root)
@@ -132,7 +132,7 @@ def configSettings(master):
 	modeSelection = tk.OptionMenu(root,mode,*modes)
 	modeSelection.grid(row=1,column=2)
 
-	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",24))
+	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",28))
 	rectLabel.grid(row=2,column=1)
 	rectifications = ['On','Off']
 	rectification = tk.StringVar(root)
@@ -140,7 +140,7 @@ def configSettings(master):
 	rectSelection = tk.OptionMenu(root,rectification,*rectifications)
 	rectSelection.grid(row=2,column=2)
 
-	flashLabel = tk.Label(root,text="Flash: ",font=("Courier",24))
+	flashLabel = tk.Label(root,text="Flash: ",font=("Courier",28))
 	flashLabel.grid(row=3,column=1)
 	flashModes = ['On','Off']
 	flash = tk.StringVar(root)
@@ -148,7 +148,7 @@ def configSettings(master):
 	flashSelection = tk.OptionMenu(root,flash,*flashModes)
 	flashSelection.grid(row=3,column=2)
 
-	confirm = tk.Button(root,text="Update Settings",font=("Courier",24),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),root))
+	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),root))
 	confirm.grid(row=4,column=2)
 	
 	root.mainloop()
