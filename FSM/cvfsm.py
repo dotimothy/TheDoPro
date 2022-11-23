@@ -64,7 +64,7 @@ def imagePreview(root,master,lbl):
 		},
 		'Multiblock':{
 			'algor':2,
-			'downscale':2
+			'downscale':4
 		}}
 		image_L = cs.readLeft(0)
 		image_R = cs.readRight(0)
