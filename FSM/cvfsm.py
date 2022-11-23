@@ -66,8 +66,8 @@ def imagePreview(root,master,lbl):
 			'algor':2,
 			'downscale':4
 		}}
-		image_L = cs.readLeft(0)
-		image_R = cs.readRight(0)
+		image_L = cs.readLeft(1)
+		image_R = cs.readRight(1)
 		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale']) 
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):

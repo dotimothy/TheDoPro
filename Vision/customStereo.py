@@ -175,14 +175,14 @@ def readLeft(mode):
         return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         
-        return leftCam.read()
+        return leftCam.read()[1]
     
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        return rightCam.read()
+        return rightCam.read()[1]
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
