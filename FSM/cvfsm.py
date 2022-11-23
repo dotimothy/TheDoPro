@@ -182,6 +182,7 @@ if __name__ == '__main__':
 	#updateButtonState(master)
 	#offState(master)
 	root = tk.Tk()
+	root.geometry('640x480')
 	lbl = tk.Label(root)
 	im = None
 	setupPreview(root,master,lbl)
