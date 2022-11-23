@@ -179,7 +179,7 @@ def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        rightCam = cv.VideoCapture(2)
+        rightCam = cv.VideoCapture(1)
         return rightCam.read()
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
