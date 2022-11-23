@@ -171,7 +171,8 @@ def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        leftCam = cv.VideoCapture(0)
+        leftCam = cv.VideoCapture()
+        leftCam.open('/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._USB_2.0_camera_SN0001-video-index0')
         return leftCam.read()
     
 
@@ -179,7 +180,8 @@ def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        rightCam = cv.VideoCapture(1)
+        rightCam = cv.VideoCapture()
+        rightCam.open('/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._USB_2.0_camera_SN0001-video-index1')
         return rightCam.read()
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
