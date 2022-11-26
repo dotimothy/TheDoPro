@@ -258,6 +258,62 @@ def multiblock_gpu(image_L_gray, image_R_gray, block1_x, block1_y, block2_x, blo
 
     return triblock
 
+def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
+
+    image_L_gray = image_L_gray + 1e-9
+    image_R_gray = image_R_gray + 1e-9
+
+    # Image Dimension Specifications
+    column_offset = np.floor(block_x/2).astype(int)
+    row_offset = np.floor(block_y/2).astype(int)
+
+    col_bound_L = column_offset + disp
+    col_bound_U = image_L_gray.shape[1] - column_offset
+    row_bound_L = row_offset
+    row_bound_U = image_L_gray.shape[0] - row_offset
+    rsize = image_L_gray.shape[1]
+
+    # Define Vectorization Cost Function
+    ncc = np.empty((row_bound_U-row_bound_L, col_bound_U-col_bound_L, disp))
+
+    # Average Image
+    L_avg = nd.uniform_filter(image_L_gray, (block_y, block_x), mode='constant')
+    R_avg = nd.uniform_filter(image_R_gray, (block_y, block_x), mode='constant')
+
+    # Define indicies
+    idx = (np.arange(row_bound_L, row_bound_U)*rsize + \
+            np.arange(col_bound_L, col_bound_U).reshape(-1, 1)).transpose()
+    bead = (np.arange(-row_offset, row_offset+1)*rsize + \
+            np.arange(-column_offset, column_offset+1).reshape(-1, 1)).reshape(-1, 1)
+
+    # Perform cost caluclation on left image
+    L_string = idx.flatten()
+    L_braid  = L_string + bead
+    L_cost_str = (image_L_gray).flatten()[L_braid.flatten()].reshape(L_braid.shape)
+    L_avg_str = L_avg.flatten()[L_string.flatten()]
+    L_residual = (L_cost_str - L_avg_str)
+    L2_cost = (L_residual**2).sum(axis=0).reshape(idx.shape)
+
+    # Perform cost caluclation on right image
+    for d in range(0, disp):
+
+      R_string = (idx - d).flatten()
+      R_braid  = L_string + bead
+      R_cost_str = (image_R_gray).flatten()[R_braid.flatten()].reshape(R_braid.shape)
+      R_avg_str = R_avg.flatten()[R_string.flatten()]
+      R_residual = (R_cost_str - R_avg_str)
+      R2_cost = (R_residual**2).sum(axis=0).reshape(idx.shape)
+
+      LR_cost_str = L_residual*R_residual
+      LR_cost = LR_cost_str.sum(axis=0).reshape(idx.shape)
+      
+      ncc[:, :, d] = LR_cost/(np.sqrt(L2_cost*R2_cost)+1e-2)
+
+    #cost_vec = nd.uniform_filter(cost_vec, (block_y, block_x, 1), mode='constant') * block_x * block_y
+    #cost_vec = np.max(cost_vec, axis=2)
+
+    return ncc
+
 # Assume Left is index 0, Right is index 2
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
