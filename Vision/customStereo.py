@@ -15,11 +15,13 @@ try:
 except:
     print(f'No GPU Avaliable for cupy')
 
-try:
-    leftCam = cv.VideoCapture(0)
-    rightCam = cv.VideoCapture(2)
-except:
-    print(f'No Webcams')
+sourceCam = False
+if(sourceCam):
+    try:
+        leftCam = cv.VideoCapture(0)
+        rightCam = cv.VideoCapture(2)
+    except:
+        print(f'No Webcams')
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
@@ -312,6 +314,8 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
     #cost_vec = nd.uniform_filter(cost_vec, (block_y, block_x, 1), mode='constant') * block_x * block_y
     #cost_vec = np.max(cost_vec, axis=2)
 
+    ncc = np.max(nd.uniform_filter(ncc, (17, 17, 1), mode='constant'), 2)
+
     return ncc
 
 # Assume Left is index 0, Right is index 2
@@ -347,16 +351,18 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = result[0][:,:,0]
     elif(algor == 2): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
-    elif(algor == 3): #Multiproces Cost Block
+    elif(algor == 3): #Multiprocess Cost Block
         disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 16, cpu_count())
-    elif(algor == 4): #Cost Block Matching GPU
+    elif(algor == 4): #NCC Cost Block
+        disparity = vec_NCC(leftFrameGray,rightFrameGray,3,3,64)
+    elif(algor == 5): #Cost Block Matching GPU
         if(haveGPU):
             result = vec_cost_block_matching_gpu(leftFrameGray, rightFrameGray, 9, 9, 8)
         else:
             print(f'No GPU: Fallback to CPU Computation')
             result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 8)
         disparity = result[0][:,:,0]
-    elif(algor == 5): #Multiblock GPU
+    elif(algor == 6): #Multiblock GPU
         if(haveGPU): 
             result = multiblock_gpu(leftFrameGray,rightFrameGray,9,9,21,3,3,21,16)
         else:
@@ -377,7 +383,7 @@ if __name__ == "__main__":
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
     start = time.time()
-    test = processCapture(image_L,image_R,2,1)
+    test = processCapture(image_L,image_R,4,1)
     print(f'Finished in {time.time() - start} seconds')
     cv.imshow('result',test)
     cv.waitKey(2000)
