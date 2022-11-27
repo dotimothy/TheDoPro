@@ -15,13 +15,6 @@ try:
 except:
     print(f'No GPU Avaliable for cupy')
 
-sourceCam = False
-if(sourceCam):
-    try:
-        leftCam = cv.VideoCapture(0)
-        rightCam = cv.VideoCapture(2)
-    except:
-        print(f'No Webcams')
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
@@ -347,14 +340,14 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = stereo.compute(leftFrameGray,rightFrameGray)
         disparity = (disparity).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
-        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 8)
+        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]
     elif(algor == 2): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
     elif(algor == 3): #Multiprocess Cost Block
         disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 16, cpu_count())
     elif(algor == 4): #NCC Cost Block
-        disparity = vec_NCC(leftFrameGray,rightFrameGray,3,3,64)
+        disparity = vec_NCC(leftFrameGray,rightFrameGray,3,3,32)
     elif(algor == 5): #Cost Block Matching GPU
         if(haveGPU):
             result = vec_cost_block_matching_gpu(leftFrameGray, rightFrameGray, 9, 9, 8)
@@ -383,7 +376,7 @@ if __name__ == "__main__":
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
     start = time.time()
-    test = processCapture(image_L,image_R,4,1)
+    test = processCapture(image_L,image_R,3,4)
     print(f'Finished in {time.time() - start} seconds')
     cv.imshow('result',test)
     cv.waitKey(2000)
@@ -433,3 +426,10 @@ if __name__ == "__main__":
 
     # # cv.imwrite('cost.png',cv.applyColorMap((255*BM[0][:,:,0]/max(BM)).astype(np.uint8),cv.COLORMAP_JET))
     # # cv.imwrite('multi.png',cv.applyColorMap(MBM.astype(np.uint8),cv.COLORMAP_JET))
+
+# else: 
+#     try:
+#         leftCam = cv.VideoCapture(0)
+#         rightCam = cv.VideoCapture(2)
+#     except:
+#         print(f'No Webcams')
