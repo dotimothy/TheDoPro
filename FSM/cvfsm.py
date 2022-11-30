@@ -119,7 +119,7 @@ def saveImage(im,outputDir):
 def configSettings(master):
 	root = tk.Tk()
 	root.title('Settings')
-	root.geometry('640x480')
+	root.geometry('960x540')
 
 	title = tk.Label(root,text='Settings',font=("Courier",30))
 	title.grid(row=0,column=1)
