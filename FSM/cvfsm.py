@@ -49,9 +49,9 @@ def checkPower(master):
 def imagePreview(root,master,lbl):
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
-		im = cs.readRight(0)
+		im = cs.readRight(1)
 	elif(master['settings']['state'] == 'Left'):
-		im = cs.readLeft(0)
+		im = cs.readLeft(1)
 	elif(master['settings']['state'] == 'Capture'):
 		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
 		config = {'OpenCV': {
@@ -66,8 +66,8 @@ def imagePreview(root,master,lbl):
 			'algor':2,
 			'downscale':4
 		}}
-		image_L = cs.readLeft(0)
-		image_R = cs.readRight(0)
+		image_L = cs.readLeft(1)
+		image_R = cs.readRight(1)
 		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale']) 
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
