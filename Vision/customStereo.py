@@ -16,7 +16,7 @@ except:
     print(f'No GPU Avaliable for cupy')
 
 try:
-    leftCam = cv.VideoCapture(0)
+    leftCam = cv.VideoCapture(2)
     rightCam = cv.VideoCapture(1)
 except:
     print(f'No Webcams')
