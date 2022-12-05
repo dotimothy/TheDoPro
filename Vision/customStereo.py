@@ -17,7 +17,7 @@ except:
 
 try:
     leftCam = cv.VideoCapture(0)
-    rightCam = cv.VideoCapture(2)
+    rightCam = cv.VideoCapture(1)
 except:
     print(f'No Webcams')
 
