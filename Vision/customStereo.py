@@ -15,6 +15,12 @@ try:
 except:
     print(f'No GPU Avaliable for cupy')
 
+try:
+    leftCam = videoCapture(0)
+    rightCam = videoCapture(2)
+except:
+    print(f'No Webcams')
+
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
