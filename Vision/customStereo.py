@@ -16,8 +16,8 @@ except:
     print(f'No GPU Avaliable for cupy')
 
 try:
-    leftCam = videoCapture(0)
-    rightCam = videoCapture(2)
+    leftCam = cv.VideoCapture(2)
+    rightCam = cv.VideoCapture(1)
 except:
     print(f'No Webcams')
 
@@ -322,14 +322,13 @@ def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        
-        return leftCam.read()[1]
+        return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        return rightCam.read()[1]
+        return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
@@ -343,7 +342,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     if(algor == 0): #OpenCV
         stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)      
-        disparity = (disparity/4).astype(np.uint8)
+        #disparity = (disparity/4).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]

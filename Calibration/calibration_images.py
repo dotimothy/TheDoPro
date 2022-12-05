@@ -1,12 +1,17 @@
 import cv2
 import time
+import os
 
-cap = cv2.VideoCapture(1)
-cap2 = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(2) #left 
+cap2 = cv2.VideoCapture(1) #right
 
 num = 0
 
-while cap.isOpened() and num < 20:
+if(not os.path.exists('./left') and not os.path.exists('./right')):
+    os.mkdir('./left')
+    os.mkdir('./right')
+
+while cap.isOpened() and num < 5:
 
     succes1, img = cap.read()
     succes2, img2 = cap2.read()
