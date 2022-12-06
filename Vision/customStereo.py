@@ -342,7 +342,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     if(algor == 0): #OpenCV
         stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)      
-        #disparity = (disparity/4).astype(np.uint8)
+        disparity = ((disparity+16)/4 - 1).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]
@@ -371,14 +371,16 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     return disparity
 
 if __name__ == "__main__":
-    image_L = cv.imread('../Images/left_piano.png',0)
+    image_L = cv.imread('../Images/left_cone.png',0)
     image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-    image_R = cv.imread('../Images/right_piano.png', 0)
+    image_R = cv.imread('../Images/right_cone.png', 0)
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
     start = time.time()
-    test = processCapture(image_L,image_R,0,1)
-    test = cv.cvtColor(test,cv.COLOR_BGR2RGB)
+    disparity = processCapture(image_L,image_R,0,1)
+    #disparity = cv.imread('../Images/openCV.png')
+    test = cv.medianBlur(disparity,21)
+    #test = cv.cvtColor(test,cv.COLOR_BGR2RGB)
     #stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
     #test = stereo.compute(image_L, image_R)
     print(f'Finished in {time.time() - start} seconds')
