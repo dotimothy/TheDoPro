@@ -4,3 +4,4 @@ numpy
 tk
 jupyter
 scipy
+pypfm
