@@ -13,7 +13,9 @@ stereo = cv.StereoBM_create(numDisparities=64, blockSize=15)
 disparity = stereo.compute(image_L,image_R)
 plt.imshow(disparity,cmap='jet')
 plt.axis('off')
-plt.savefig('./disMaps/D_50.png')
+plt.savefig('./disMaps/D_25.png')
 
-
-print(disparity[270][330])
+raw_disp = disparity[270][330]
+bf = 1486
+depth =  64*bf/raw_disp
+print(depth)

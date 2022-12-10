@@ -7,44 +7,40 @@ import numpy as np
 import csv
 
 #objects = ['art','chess','cone','curule','mask','piano']
-objects = ['piano']
+#objects = ['piano']
+depths = [25,50,75,100,150,200]
 if(not os.path.exists('./disMaps')):
 	os.mkdir('./disMaps')
 
-for item in objects:
-	image_L = cv.imread(f'../Images/left_{item}.png', 0)
-	image_R = cv.imread(f'../Images/right_{item}.png', 0)
-	GT_L = cv.imread(f'../Images/left_{item}_GT.jpg',0)
-	GT_R = cv.imread(f'../Images/right_{item}_GT.jpg',0)
-	GT_L_Norm = (GT_L).astype(np.float)/np.max(GT_L)
-	GT_R_Norm = (GT_R).astype(np.float)/np.max(GT_R)
 
-	blocks = []
-	times = []
+for depth in depths:
+	image_L = cv.imread(f'../Images/L_{depth}.png', 0)
+	image_R = cv.imread(f'../Images/R_{depth}.png', 0)
+	entrylist = []
 
-	if(not os.path.exists(f'./disMaps/{item}')):
-		os.mkdir(f'./disMaps/{item}')
-	for i in range(5,51,2): #Up to 256 Disparities
-		blocks.append(i)
-		stereo = cv.StereoBM_create(numDisparities=64, blockSize=i)
+	if(not os.path.exists(f'./disMaps/Z_{depth}')):
+		os.mkdir(f'./disMaps/Z_{depth}')
+	for i in range(5,53,4): #Up to 256 Disparities
+		entry = []
+		entry.append(i)
+		stereo = cv.StereoBM_create(numDisparities=32, blockSize=i)
 		
 		# Time Metric
 		start = time()
 		disparity = stereo.compute(image_L, image_R)
+		comp = 1000*(time() - start)
 		disparity = ((disparity+16)/4 - 1).astype(np.uint8)
-		disparity = cv.resize(disparity,(2820,1920),interpolation=cv.INTER_LINEAR)
-		comp = time() - start
-		times.append(comp)
-		
-		#Error Metric
-		disp_Norm = (disparity.astype(np.float))/np.max(disparity)
-		err_L = 100 * np.absolute(np.divide(np.subtract(disp_Norm,GT_L_Norm),GT_L_Norm)) 
-		err_R = 100 * np.absolute(np.divide(np.subtract(disp_Norm,GT_R_Norm),GT_R_Norm))
-		avg_err_L = np.average(err_L)
-		avg_err_R = np.average(err_R)
+		disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2RGB)
+		entry.append(comp)
+		entrylist.append(entry)
 
 		#Saving Disparity to File 
-		cv.imwrite(f'./disMaps/{item}/block{i}.png',disparity)
-		print(f'{item}: Finished in {1000*(comp)} ms for Block = {i}')
-		print(f'{item} avereage error with left GT: {avg_err_L}%') 
-		print(f'{item} avereage error with right GT: {avg_err_R}%') 
+		cv.imwrite(f'./disMaps/Z_{depth}/block{i}.png',disparity)
+		print(f'{depth} in.: Finished in {comp} ms for Block = {i}')
+	#Computation Calculation 
+	headers = ['Block Size','Computation Time (ms)']
+	file = open(f'./disMaps/Z_{depth}.csv','w',newline='')
+	csvwriter = csv.writer(file)
+	csvwriter.writerow(headers)
+	csvwriter.writerows(entrylist)
+	file.close()

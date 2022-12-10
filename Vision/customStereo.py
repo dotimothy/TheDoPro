@@ -340,9 +340,9 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV
-        stereo = cv.StereoBM_create(numDisparities=64,blockSize=9)
+        stereo = cv.StereoBM_create(numDisparities=64,blockSize=15)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)      
-        #disparity = ((disparity+16)/4 - 1).astype(np.uint8)
+        disparity = ((disparity+16)/4 - 1).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]
@@ -367,25 +367,26 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
             disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
-    disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2RGB)
+    disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 if __name__ == "__main__":
-    image_L = cv.imread('../Images/L_25.png',0)
+    image_L = cv.imread('../Images/L_50.png',0)
     image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-    image_R = cv.imread('../Images/R_25.png', 0)
+    image_R = cv.imread('../Images/R_50.png', 0)
     image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
 
     start = time.time()
     disparity = processCapture(image_L,image_R,0,1)
     #disparity = cv.imread('../Images/openCV.png')
-    test = disparity
     #test = cv.cvtColor(test,cv.COLOR_BGR2RGB)
     #stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
     #test = stereo.compute(image_L, image_R)
     print(f'Finished in {time.time() - start} seconds')
-    cv.imshow('result',test)
+    cv.imshow('result',disparity)
+    cv.imwrite('./result.png',disparity)
     cv.waitKey(2000)
+
 
     # image_L = cv.imread('../Images/left_piano.png', 1)
     # image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
