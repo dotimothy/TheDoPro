@@ -7,9 +7,11 @@ import sys
 
 if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	import RPi.GPIO as GPIO
-	sys.path.insert(1,'/home/tdhl/Github/TheDoPro/Vision')
+	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
+programMode = 0
+
 import customStereo as cs 
 
 # GPIO Functions 
@@ -49,9 +51,9 @@ def checkPower(master):
 def imagePreview(root,master,lbl):
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
-		im = cs.readRight(1)
+		im = cs.readRight(programMode)
 	elif(master['settings']['state'] == 'Left'):
-		im = cs.readLeft(1)
+		im = cs.readLeft(programMode)
 	elif(master['settings']['state'] == 'Capture'):
 		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
 		config = {'OpenCV': {
@@ -66,8 +68,8 @@ def imagePreview(root,master,lbl):
 			'algor':2,
 			'downscale':4
 		}}
-		image_L = cs.readLeft(1)
-		image_R = cs.readRight(1)
+		image_L = cs.readLeft(programMode)
+		image_R = cs.readRight(programMode)
 		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):

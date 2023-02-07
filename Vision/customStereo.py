@@ -324,13 +324,13 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 # Assume Left is index 0, Right is index 2
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2YCRCB)
+        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2YCRCB)
+        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
