@@ -14,21 +14,20 @@ stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 
 # Open both cameras
-# cap_right = cv2.VideoCapture(2, cv2.CAP_DSHOW)                    
-# cap_left =  cv2.VideoCapture(1, cv2.CAP_DSHOW)
+cap_right = cv2.VideoCapture(1)                    
+cap_left =  cv2.VideoCapture(2)
 
-imagesLeft = sorted(glob.glob('left/*.png'))
-imagesRight = sorted(glob.glob('right/*.png'))
+#imagesLeft = sorted(glob.glob('left/*.png'))
+#imagesRight = sorted(glob.glob('right/*.png'))
 
 
-for imgLeft, imgRight in zip(imagesLeft, imagesRight):
-# while(cap_right.isOpened() and cap_left.isOpened()):
+#for imgLeft, imgRight in zip(imagesLeft, imagesRight):
+while(cap_right.isOpened() and cap_left.isOpened()):
+    succes_right, frame_right = cap_right.read()
+    succes_left, frame_left = cap_left.read()
 
-    # succes_right, frame_right = cap_right.read()
-    # succes_left, frame_left = cap_left.read()
-
-    frame_right = cv2.imread(imgRight)
-    frame_left = cv2.imread(imgLeft)
+    #frame_right = cv2.imread(imgRight)
+    #frame_left = cv2.imread(imgLeft)
 
     # Undistort and rectify images
     frame_right = cv2.remap(frame_right, stereoMapR_x, stereoMapR_y, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
@@ -37,7 +36,7 @@ for imgLeft, imgRight in zip(imagesLeft, imagesRight):
     # Show the frames
     cv2.imshow("frame right", frame_right) 
     cv2.imshow("frame left", frame_left)
-    cv2.waitKey(1000)
+    cv2.waitKey(50)
 
     # # Hit "q" to close the window
     # if cv2.waitKey(1) & 0xFF == ord('q'):

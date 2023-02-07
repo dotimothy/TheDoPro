@@ -68,16 +68,17 @@ def imagePreview(root,master,lbl):
 		}}
 		image_L = cs.readLeft(1)
 		image_R = cs.readRight(1)
-		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale']) 
+		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
 			os.mkdir('./results')
 		saveImage(im,'./results')
 		master['settings']['save'] = 'Off'
+	im = cv.resize(im,(640,480))
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
-	lbl.after(250,imagePreview,root,master,lbl)
+	lbl.after(50,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
 	lbl.grid(row=1,column=1)
@@ -171,7 +172,7 @@ if __name__ == '__main__':
 		},
 		'settings': {
 			'state': 'Right',
-			'mode': 'Cost Block',
+			'mode': 'OpenCV',
 			'rectification': 'Off',
 			'flash': 'Off',
 			'save': 'Off'

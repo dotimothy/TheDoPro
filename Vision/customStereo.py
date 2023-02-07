@@ -16,8 +16,12 @@ except:
     print(f'No GPU Avaliable for cupy')
 
 try:
-    leftCam = cv.VideoCapture(2)
-    rightCam = cv.VideoCapture(1)
+    leftCam = cv.VideoCapture(1)
+    rightCam = cv.VideoCapture(2)
+    #leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 1920)
+    #leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
+    #rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 1920)
+    #rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,1080)
 except:
     print(f'No Webcams')
 
@@ -320,13 +324,13 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 # Assume Left is index 0, Right is index 2
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2YCRCB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2YCRCB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -340,7 +344,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV
-        stereo = cv.StereoBM_create(numDisparities=64,blockSize=15)
+        stereo = cv.StereoBM_create(numDisparities=256,blockSize=25)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)      
         disparity = ((disparity+16)/4 - 1).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
@@ -370,14 +374,28 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
-if __name__ == "__main__":
-    image_L = cv.imread('../Images/L_50.png',0)
-    image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-    image_R = cv.imread('../Images/R_50.png', 0)
-    image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+def extractIntensity(disparity,intensity):
+    gray = cv.cvtColor(disparity,cv.COLOR_BGR2GRAY)
+    filtered = disparity
+    for i in range(disparity.shape[0]): 
+        for j in range(disparity.shape[1]):
+            pixel = gray[i,j]
+            if((pixel <= int(intensity-30) or pixel >= int(intensity+30))):
+                filtered[i,j,2] = 0
+                filtered[i,j,1] = 0
+                filtered[i,j,0] = 0
+    return filtered
 
+
+if __name__ == "__main__":
+    #image_L = cv.imread('../Images/L_50.png',0)
+    #image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
+    #image_R = cv.imread('../Images/R_50.png', 0)
+    #image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+    image_L = readLeft(1)
+    image_R = readRight(1)
     start = time.time()
-    disparity = processCapture(image_L,image_R,0,1)
+    disparity = cv.cvtColor(processCapture(image_L,image_R,0,1),cv.COLOR_BGR2RGB)
     #disparity = cv.imread('../Images/openCV.png')
     #test = cv.cvtColor(test,cv.COLOR_BGR2RGB)
     #stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
