@@ -1,0 +1,19 @@
+Add Pin To Net: Unknown Pin: Pin D1-ANOD
+Add Pin To Net: Unknown Pin: Pin D1-CATH
+Add Pin To Net: Unknown Pin: Pin D2-ANOD
+Add Pin To Net: Unknown Pin: Pin D2-CATH
+Add Pin To Net: Unknown Pin: Pin D3-ANOD
+Add Pin To Net: Unknown Pin: Pin D3-CATH
+Added Pin To Net: NetName=NetC10_1 Pin=R13-1
+Added Member To Class: ClassName=DoPro Schematic Member=Component C1 470uF
+Added Member To Class: ClassName=DoPro Schematic Member=Component C2 10uF
+Added Member To Class: ClassName=DoPro Schematic Member=Component C3 1uF
+Added Member To Class: ClassName=DoPro Schematic Member=Component C4 470uF
+Added Member To Class: ClassName=DoPro Schematic Member=Component C8 10nF
+Added Member To Class: ClassName=DoPro Schematic Member=Component C9 2.2nF
+Added Member To Class: ClassName=DoPro Schematic Member=Component C10 47pF
+Added Member To Class: ClassName=DoPro Schematic Member=Component D4 Schottky_Diode
+Added Member To Class: ClassName=DoPro Schematic Member=Component R11 30.9K
+Added Member To Class: ClassName=DoPro Schematic Member=Component R12 10K
+Added Member To Class: ClassName=DoPro Schematic Member=Component R13 51K
+Added Member To Class: ClassName=DoPro Schematic Member=Component U1 PAM2423AECADJR
