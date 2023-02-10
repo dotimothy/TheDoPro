@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------------------------------------------
-NCDrill File Report For: DoPro PCB.PcbDoc   11/15/2022  10:59:40 PM
+NCDrill File Report For: DoPro PCB.PcbDoc   1/18/2023  5:22:14 AM
 ----------------------------------------------------------------------------------------------------------------------------------
 
 Layer Pair : Top Layer to Bottom Layer
@@ -7,14 +7,14 @@ ASCII RoundHoles File : DoPro PCB.TXT
 
 Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
 ----------------------------------------------------------------------------------------------------------------------------------
-T1      22mil (0.559mm)                                           Round             55        PTH        21.80inch (553.67mm)
-T2      28mil (0.711mm)                                           Round             21        PTH        5.53inch (140.54mm)
-T3      35mil (0.889mm)                                           Round             16        PTH        8.04inch (204.13mm)
-T4      40mil (1.016mm)                                           Round             40        PTH        5.22inch (132.68mm)
+T1      22mil (0.559mm)                                           Round             50        PTH        19.97inch (507.17mm)
+T2      28mil (0.711mm)                                           Round             9         PTH        3.33inch (84.66mm)
+T3      35mil (0.889mm)                                           Round             16        PTH        8.07inch (204.95mm)
+T4      40mil (1.021mm)                                           Round             40        PTH        5.22inch (132.68mm)
 T5      62mil (1.575mm)                                           Round             2         PTH        0.21inch (5.33mm)
-T6      39mil (0.991mm)                                           Round             4         NPTH       0.30inch (7.62mm)
-T7      106mil (2.692mm)                                          Round             4         NPTH       6.50inch (165.00mm)
+T6      39mil (1.001mm)                                           Round             4         NPTH       0.30inch (7.62mm)
+T7      106mil (2.7mm)                                            Round             4         NPTH       6.50inch (165.00mm)
 ----------------------------------------------------------------------------------------------------------------------------------
-Totals                                                                              142
+Totals                                                                              125
 
-Total Processing Time (hh:mm:ss) : 00:00:01
+Total Processing Time (hh:mm:ss) : 00:00:00
