@@ -5,3 +5,4 @@ test.ipynb
 Vision/__pycache__/customStereo.cpython-310.pyc
 results
 *.pyc
+FSM/voltage.csv
