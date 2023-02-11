@@ -189,6 +189,7 @@ if __name__ == '__main__':
 	root.geometry('1280x720')
 	lbl = tk.Label(root)
 	im = None
+	setupGPIO(master)
 	setupPreview(root,master,lbl)
 	imagePreview(root,master,lbl)
 	root.mainloop()
