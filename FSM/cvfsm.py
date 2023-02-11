@@ -49,6 +49,7 @@ def checkPower(master):
 
 # Main Window Function
 def imagePreview(root,master,lbl):
+	updateButtonState(master)
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
