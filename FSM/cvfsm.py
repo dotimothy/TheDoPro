@@ -168,10 +168,10 @@ if __name__ == '__main__':
 	# pins are physical
 	master = {	
 		'buttons': {
-			'power': {'pin': 10},
-			'capture':{'pin': 12}, 
-			'sel1': {'pin': 16},
-			'sel2': {'pin': 18}
+			'power': {'pin': 5},
+			'capture':{'pin': 11}, 
+			'sel1': {'pin': 13},
+			'sel2': {'pin': 31}
 		},
 		'settings': {
 			'state': 'Right',
