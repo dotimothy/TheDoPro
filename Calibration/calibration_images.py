@@ -2,8 +2,12 @@ import cv2
 import time
 import os
 
-cap = cv2.VideoCapture(1) #left 
-cap2 = cv2.VideoCapture(2) #right
+cap = cv2.VideoCapture(0,cv2.CAP_DSHOW) #left 
+cap2 = cv2.VideoCapture(1,cv2.CAP_DSHOW) #right
+cap.set(cv2.CAP_PROP_SHARPNESS,200)
+cap2.set(cv2.CAP_PROP_SHARPNESS,200)
+cap.set(cv2.CAP_PROP_SHARPNESS,-5.0)
+cap2.set(cv2.CAP_PROP_SHARPNESS,-5.0)
 
 num = 0
 
@@ -11,7 +15,7 @@ if(not os.path.exists('./left') and not os.path.exists('./right')):
     os.mkdir('./left')
     os.mkdir('./right')
 
-while cap.isOpened() and num < 50:
+while cap.isOpened() and num < 5:
 
     succes1, img = cap.read()
     succes2, img2 = cap2.read()
