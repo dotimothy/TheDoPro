@@ -15,7 +15,7 @@ if(not os.path.exists('./left') and not os.path.exists('./right')):
     os.mkdir('./left')
     os.mkdir('./right')
 
-while cap.isOpened() and num < 5:
+while cap.isOpened() and num < 50:
 
     succes1, img = cap.read()
     succes2, img2 = cap2.read()
