@@ -14,8 +14,8 @@ stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 
 # Open both cameras
-cap_right = cv2.VideoCapture(1)                    
-cap_left =  cv2.VideoCapture(2)
+cap_right = cv2.VideoCapture(1,cv2.CAP_DSHOW)                    
+cap_left =  cv2.VideoCapture(0,cv2.CAP_DSHOW)
 
 #imagesLeft = sorted(glob.glob('left/*.png'))
 #imagesRight = sorted(glob.glob('right/*.png'))
