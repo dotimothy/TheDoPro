@@ -56,12 +56,13 @@ def checkPower(master):
 def imagePreview(root,master,lbl):
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		updateButtonState(master)
-		if(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] == 0 and not(master['buttons']['capture']['state'])): #Right
+		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Right
 			updateState(master,'Right')
 		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Left
 			updateState(master,'Left')
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
-			updateState(master,'Capture')	
+			updateState(master,'Capture')
+		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Capture	
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
