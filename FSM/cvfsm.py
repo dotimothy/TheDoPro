@@ -62,7 +62,8 @@ def imagePreview(root,master,lbl):
 			updateState(master,'Left')
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
 			updateState(master,'Capture')
-		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Capture	
+		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
+			configSettings(master)
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
