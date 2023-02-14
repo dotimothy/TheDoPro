@@ -10,7 +10,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 0
+programMode = 1
 
 import customStereo as cs 
 
@@ -54,7 +54,8 @@ def checkPower(master):
 
 # Main Window Function
 def imagePreview(root,master,lbl):
-	updateButtonState(master)
+	if(sys.platform == 'linux' or sys.platform == 'linux2'):
+		updateButtonState(master)
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
@@ -175,8 +176,13 @@ if __name__ == '__main__':
 		'buttons': {
 			'power': {'pin': 5},
 			'capture':{'pin': 31}, 
+<<<<<<< HEAD
 			'sel1': {'pin': 11},
 			'sel2': {'pin': 13}
+=======
+			'sel1': {'pin': 13},
+			'sel2': {'pin': 11}
+>>>>>>> 24bf23d7c4d423801087db5fb246239a62438ddb
 		},
 		'settings': {
 			'state': 'Right',
@@ -190,6 +196,7 @@ if __name__ == '__main__':
 	#setupGPIO(master)
 	#updateButtonState(master)
 	#offState(master)
+<<<<<<< HEAD
 	
 	#root = tk.Tk()
 	#root.geometry('1280x720')
@@ -203,3 +210,14 @@ if __name__ == '__main__':
 		sleep(1)
 		updateButtonState(master)
 		printButtonState(master)
+=======
+	root = tk.Tk()
+	root.geometry('1280x720')
+	lbl = tk.Label(root)
+	im = None
+	if(sys.platform == 'linux' or sys.platform == 'linux2'):
+		setupGPIO(master)
+	setupPreview(root,master,lbl)
+	imagePreview(root,master,lbl)
+	root.mainloop()
+>>>>>>> 24bf23d7c4d423801087db5fb246239a62438ddb

@@ -2,8 +2,12 @@ import cv2
 import time
 import os
 
-cap = cv2.VideoCapture(1) #left 
-cap2 = cv2.VideoCapture(2) #right
+cap = cv2.VideoCapture(0,cv2.CAP_DSHOW) #left 
+cap2 = cv2.VideoCapture(1,cv2.CAP_DSHOW) #right
+cap.set(cv2.CAP_PROP_SHARPNESS,200)
+cap2.set(cv2.CAP_PROP_SHARPNESS,200)
+cap.set(cv2.CAP_PROP_SHARPNESS,-5.0)
+cap2.set(cv2.CAP_PROP_SHARPNESS,-5.0)
 
 num = 0
 
