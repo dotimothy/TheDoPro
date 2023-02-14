@@ -200,7 +200,7 @@ if __name__ == '__main__':
 			'sel2': {'pin': 13}
 		},
 		'leds': {
-			'flash': {'pin': 15}
+			'flash': {'pin': 15},
 			'capture'{'pin': 7}
 		},
 		'settings': {
