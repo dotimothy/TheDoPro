@@ -26,7 +26,12 @@ def setupGPIO(master):
 
 def updateButtonState(master): 
 	for button in master['buttons']: 
-		master['buttons'][button]['state'] = GPIO.input(master['buttons'][button]['pin'])
+		master['buttons'][button]['state'] = 0 if(GPIO.input(master['buttons'][button]['pin'])) else 1
+
+def printButtonState(master):
+	for button in master['buttons']:
+		print(f"{button}: {master['buttons'][button]['state']}")
+	print()
 
 def checkPower(master):
 	powerCounter = 3250
@@ -169,9 +174,9 @@ if __name__ == '__main__':
 	master = {	
 		'buttons': {
 			'power': {'pin': 5},
-			'capture':{'pin': 11}, 
-			'sel1': {'pin': 13},
-			'sel2': {'pin': 31}
+			'capture':{'pin': 31}, 
+			'sel1': {'pin': 11},
+			'sel2': {'pin': 13}
 		},
 		'settings': {
 			'state': 'Right',
@@ -185,11 +190,16 @@ if __name__ == '__main__':
 	#setupGPIO(master)
 	#updateButtonState(master)
 	#offState(master)
-	root = tk.Tk()
-	root.geometry('1280x720')
-	lbl = tk.Label(root)
-	im = None
+	
+	#root = tk.Tk()
+	#root.geometry('1280x720')
+	#lbl = tk.Label(root)
+	#im = None
 	setupGPIO(master)
-	setupPreview(root,master,lbl)
-	imagePreview(root,master,lbl)
-	root.mainloop()
+	#setupPreview(root,master,lbl)
+	#imagePreview(root,master,lbl)
+	#root.mainloop()
+	while True:
+		sleep(1)
+		updateButtonState(master)
+		printButtonState(master)
