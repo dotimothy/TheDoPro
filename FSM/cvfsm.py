@@ -198,16 +198,17 @@ if __name__ == '__main__':
 	#updateButtonState(master)
 	#offState(master)
 	
-	#root = tk.Tk()
-	#root.geometry('1280x720')
-	#lbl = tk.Label(root)
-	#im = None
+
 	if(sys.platform == 'linux' or sys.platform == 'linux2')
 		setupGPIO(master)
-	#setupPreview(root,master,lbl)
-	#imagePreview(root,master,lbl)
-	#root.mainloop()
-	while True:
-		sleep(1)
-		updateButtonState(master)
-		printButtonState(master)
+	root = tk.Tk()
+	root.geometry('1280x720')
+	lbl = tk.Label(root)
+	im = None
+	setupPreview(root,master,lbl)
+	imagePreview(root,master,lbl)
+	root.mainloop()
+	# while True:
+	# 	sleep(1)
+	# 	updateButtonState(master)
+	# 	printButtonState(master)
