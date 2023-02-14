@@ -201,7 +201,7 @@ if __name__ == '__main__':
 		},
 		'leds': {
 			'flash': {'pin': 15},
-			'capture'{'pin': 7}
+			'capture':{'pin': 7}
 		},
 		'settings': {
 			'state': 'Right',
