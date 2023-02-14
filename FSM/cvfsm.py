@@ -23,6 +23,8 @@ def setupGPIO(master):
 	GPIO.setmode(GPIO.BOARD)
 	for button in master['buttons']: 
 		GPIO.setup(master['buttons'][button]['pin'],GPIO.IN,pull_up_down=GPIO.PUD_UP)
+	for led in master['leds']:
+		GPIO.setup(master['leds'][led]['pin'],GPIO.OUT)
 
 def updateButtonState(master): 
 	for button in master['buttons']: 
@@ -67,9 +69,19 @@ def imagePreview(root,master,lbl):
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
+		if(sys.platform == 'linux' or sys.platform == 'linux2'):
+			GPIO.output(master['leds']['capture']['pin'],0)
+			GPIO.output(master['leds']['flash']['pin'],0)
 	elif(master['settings']['state'] == 'Left'):
 		im = cs.readLeft(programMode)
+		if(sys.platform == 'linux' or sys.platform == 'linux2'):
+			GPIO.output(master['leds']['capture']['pin'],0)
+			GPIO.output(master['leds']['flash']['pin'],0)
 	elif(master['settings']['state'] == 'Capture'):
+		if(sys.platform == 'linux' or sys.platform == 'linux2'):
+			GPIO.output(master['leds']['capture']['pin'],1)
+			if(master['settings']['flash'] == 'On'):
+				GPIO.output(master['leds']['flash']['pin'],1)
 		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
 		config = {'OpenCV': {
 			'algor':0,
@@ -186,6 +198,10 @@ if __name__ == '__main__':
 			'capture':{'pin': 31}, 
 			'sel1': {'pin': 11},
 			'sel2': {'pin': 13}
+		},
+		'leds': {
+			'flash': {'pin': 15}
+			'capture'{'pin': 7}
 		},
 		'settings': {
 			'state': 'Right',
