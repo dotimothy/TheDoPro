@@ -199,7 +199,7 @@ if __name__ == '__main__':
 	#offState(master)
 	
 
-	if(sys.platform == 'linux' or sys.platform == 'linux2')
+	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		setupGPIO(master)
 	root = tk.Tk()
 	root.geometry('1280x720')
