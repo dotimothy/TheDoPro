@@ -56,11 +56,11 @@ def checkPower(master):
 def imagePreview(root,master,lbl):
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		updateButtonState(master)
-		if(master['buttons']['sel1']['state'] && not(master['buttons']['sel2']['state']) && not(master['buttons']['capture']['state'])): #Right
+		if(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] == 0 and not(master['buttons']['capture']['state'])): #Right
 			updateState(master,'Right')
-		elif(not(master['buttons']['sel1']['state']) && master['buttons']['sel2']['state'] && not(master['buttons']['capture']['state'])): #Left
+		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Left
 			updateState(master,'Left')
-		elif(not(master['buttons']['sel1']['state']) && not(master['buttons']['sel2']['state']) && master['buttons']['capture']['state']): #Capture
+		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
 			updateState(master,'Capture')	
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
