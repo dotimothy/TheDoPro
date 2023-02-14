@@ -82,6 +82,8 @@ def imagePreview(root,master,lbl):
 			GPIO.output(master['leds']['capture']['pin'],1)
 			if(master['settings']['flash'] == 'On'):
 				GPIO.output(master['leds']['flash']['pin'],1)
+			else: 
+				GPIO.output(master['leds']['flash']['pin'],0)
 		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
 		config = {'OpenCV': {
 			'algor':0,
@@ -226,6 +228,7 @@ if __name__ == '__main__':
 	setupPreview(root,master,lbl)
 	imagePreview(root,master,lbl)
 	root.mainloop()
+	GPIO.cleanup()
 	# while True:
 	# 	sleep(1)
 	# 	updateButtonState(master)
