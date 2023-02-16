@@ -18,8 +18,8 @@ except:
 try:
     leftCam = cv.VideoCapture(0,cv.CAP_DSHOW)
     rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
-    leftCam.set(cv.CAP_PROP_SHARPNESS,0)
-    rightCam.set(cv.CAP_PROP_SHARPNESS,0)
+    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
+    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
     leftCam.set(cv.CAP_PROP_EXPOSURE,-3.0)
     rightCam.set(cv.CAP_PROP_EXPOSURE,-3.0)
     leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
