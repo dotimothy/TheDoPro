@@ -328,13 +328,13 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 # Assume Left is index 0, Right is index 2
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread('../Images/tim_L.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread('../Images/tim_R.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -348,7 +348,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV
-        stereo = cv.StereoBM_create(numDisparities=256,blockSize=15)
+        stereo = cv.StereoBM_create(numDisparities=128,blockSize=19)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)      
         disparity = ((disparity+16)/4 - 1).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching
@@ -380,7 +380,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
 
 def extractIntensity(disparity,intensity):
     gray = cv.cvtColor(disparity,cv.COLOR_BGR2GRAY)
-    filtered = disparity
+    filtered = disparity.copy()
     for i in range(disparity.shape[0]): 
         for j in range(disparity.shape[1]):
             pixel = gray[i,j]
