@@ -333,13 +333,13 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 # Assume Left is index 0, Right is index 2
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread('../Images/tim_L.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread('../Images/tim_R.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -385,7 +385,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
 
 def extractIntensity(disparity,intensity):
     gray = cv.cvtColor(disparity,cv.COLOR_BGR2GRAY)
-    filtered = disparity
+    filtered = disparity.copy()
     for i in range(disparity.shape[0]): 
         for j in range(disparity.shape[1]):
             pixel = gray[i,j]
