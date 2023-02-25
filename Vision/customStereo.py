@@ -7,6 +7,7 @@ import numpy as np
 from scipy import ndimage as nd
 from multiprocessing import Process, Queue
 from os import cpu_count
+import sys
 
 haveGPU = False
 try:
@@ -16,12 +17,16 @@ except:
     print(f'No GPU Avaliable for cupy')
 
 try:
-    leftCam = cv.VideoCapture(0,cv.CAP_DSHOW)
-    rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+    if(sys == 'win32'):
+        leftCam = cv.VideoCapture(0,cv.CAP_DSHOW)
+        rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+    else:
+        leftCam = cv.VideoCapture(1)
+        rightCam = cv.VideoCapture(2)
     leftCam.set(cv.CAP_PROP_SHARPNESS,200)
     rightCam.set(cv.CAP_PROP_SHARPNESS,200)
-    leftCam.set(cv.CAP_PROP_EXPOSURE,-3.0)
-    rightCam.set(cv.CAP_PROP_EXPOSURE,-3.0)
+    leftCam.set(cv.CAP_PROP_EXPOSURE,-6.0)
+    rightCam.set(cv.CAP_PROP_EXPOSURE,-6.0)
     leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
     leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
     rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
@@ -348,7 +353,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV
-        stereo = cv.StereoBM_create(numDisparities=256,blockSize=15)
+        stereo = cv.StereoBM_create(numDisparities=128,blockSize=25)
         disparity = stereo.compute(leftFrameGray,rightFrameGray)      
         disparity = ((disparity+16)/4 - 1).astype(np.uint8)
     elif(algor == 1): #Cost Block Matching

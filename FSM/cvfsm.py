@@ -10,7 +10,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 0
+programMode = 1
 
 import customStereo as cs 
 
@@ -228,7 +228,8 @@ if __name__ == '__main__':
 	setupPreview(root,master,lbl)
 	imagePreview(root,master,lbl)
 	root.mainloop()
-	GPIO.cleanup()
+	if(sys.platform == 'linux' or sys.platform == 'linux2'):
+		GPIO.cleanup()
 	# while True:
 	# 	sleep(1)
 	# 	updateButtonState(master)
