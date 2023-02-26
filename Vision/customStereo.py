@@ -9,13 +9,15 @@ from multiprocessing import Process, Queue
 from os import cpu_count
 import sys
 
-haveGPU = False
-try:
-    import cupy as cp
-    haveGPU = True
-except:
-    print(f'No GPU Avaliable for cupy')
+# Deprecated CUDA Support 
+# haveGPU = False
+# try:
+#     import cupy as cp
+#     haveGPU = True
+# except:
+#     print(f'No GPU Avaliable for cupy')
 
+# Tries and Open the Cameras #
 try:
     if(sys == 'win32'):
         leftCam = cv.VideoCapture(0,cv.CAP_DSHOW)
@@ -33,6 +35,15 @@ try:
     rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
 except:
     print(f'No Webcams')
+
+#Open Stereo-Map
+cv_file = cv2.FileStorage()
+cv_file.open('stereoMap_matlab.xml', cv2.FileStorage_READ)
+
+stereoMapL_x = cv_file.getNode('stereoMapL_x').mat()
+stereoMapL_y = cv_file.getNode('stereoMapL_y').mat()
+stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
+stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
@@ -330,7 +341,6 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 
     return ncc
 
-# Assume Left is index 0, Right is index 2
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         return cv.cvtColor(cv.imread('../Images/tim_L.png',1),cv.COLOR_BGR2RGB)
@@ -342,6 +352,12 @@ def readRight(mode):
         return cv.cvtColor(cv.imread('../Images/tim_R.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
+
+def rectifyLeft(leftFrame):
+    return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
+
+def rectifyRight(leftFrame):
+    return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)

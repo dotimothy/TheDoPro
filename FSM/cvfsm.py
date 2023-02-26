@@ -10,7 +10,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 1
+programMode = 0
 
 import customStereo as cs 
 
@@ -69,11 +69,15 @@ def imagePreview(root,master,lbl):
 	root.title(f'TheDoPro ({master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
+		if(master['settings']['rectification'] == 'On'):
+			im = cs.recitfyRight(im)
 		if(sys.platform == 'linux' or sys.platform == 'linux2'):
 			GPIO.output(master['leds']['capture']['pin'],0)
 			GPIO.output(master['leds']['flash']['pin'],0)
 	elif(master['settings']['state'] == 'Left'):
 		im = cs.readLeft(programMode)
+		if(master['settings']['rectification'] == 'On'):
+			im = cs.recitfyRight(im)
 		if(sys.platform == 'linux' or sys.platform == 'linux2'):
 			GPIO.output(master['leds']['capture']['pin'],0)
 			GPIO.output(master['leds']['flash']['pin'],0)
@@ -99,6 +103,9 @@ def imagePreview(root,master,lbl):
 		}}
 		image_L = cs.readLeft(programMode)
 		image_R = cs.readRight(programMode)
+		if(master['settings']['rectification'] == 'On'):
+			image_L = cs.recitfyLeft(image_L)
+			image_R = cs.recitfyRight(image_R)
 		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):

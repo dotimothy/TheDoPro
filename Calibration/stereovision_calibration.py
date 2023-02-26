@@ -36,10 +36,7 @@ for imgLeft, imgRight in zip(imagesLeft, imagesRight):
     grayL = cv.cvtColor(imgL, cv.COLOR_BGR2GRAY)
     grayR = cv.cvtColor(imgR, cv.COLOR_BGR2GRAY)
 
-    cv.imshow('left',grayL)
-    cv.imshow('right',grayR)
-
-    cv.waitKey(1000)
+    cv.waitKey(100)
 
     # Find the chess board corners
     retL, cornersL = cv.findChessboardCorners(grayL, chessboardSize, None)
@@ -53,10 +50,10 @@ for imgLeft, imgRight in zip(imagesLeft, imagesRight):
 
         objpoints.append(objp)
 
-        cornersL = cv.cornerSubPix(grayL, cornersL, (11,11), (-1,-1), criteria)
+        cornersL = cv.cornerSubPix(grayL, cornersL, (9,9), (-1,-1), criteria)
         imgpointsL.append(cornersL)
 
-        cornersR = cv.cornerSubPix(grayR, cornersR, (11,11), (-1,-1), criteria)
+        cornersR = cv.cornerSubPix(grayR, cornersR, (9,9), (-1,-1), criteria)
         imgpointsR.append(cornersR)
 
         # Draw and display the corners
@@ -64,7 +61,7 @@ for imgLeft, imgRight in zip(imagesLeft, imagesRight):
         cv.imshow('img left', imgL)
         cv.drawChessboardCorners(imgR, chessboardSize, cornersR, retR)
         cv.imshow('img right', imgR)
-        cv.waitKey(1000)
+        cv.waitKey(100)
 
 
 cv.destroyAllWindows()
@@ -103,7 +100,8 @@ retStereo, newCameraMatrixL, distL, newCameraMatrixR, distR, rot, trans, essenti
 
 rectifyScale= 1
 rectL, rectR, projMatrixL, projMatrixR, Q, roi_L, roi_R= cv.stereoRectify(newCameraMatrixL, distL, newCameraMatrixR, distR, grayL.shape[::-1], rot, trans, rectifyScale,(0,0))
-
+print(trans)
+#print(newCameraMatrixL, "\n\n", distL, "\n\n", newCameraMatrixR, "\n\n", distR,"\n\n", grayL.shape[::-1],"\n\n",rot,"\n\n",trans, "\n\n", rectifyScale,"\n\n",(0,0))
 stereoMapL = cv.initUndistortRectifyMap(newCameraMatrixL, distL, rectL, projMatrixL, grayL.shape[::-1], cv.CV_16SC2)
 stereoMapR = cv.initUndistortRectifyMap(newCameraMatrixR, distR, rectR, projMatrixR, grayR.shape[::-1], cv.CV_16SC2)
 
