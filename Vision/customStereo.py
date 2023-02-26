@@ -27,8 +27,6 @@ try:
         rightCam = cv.VideoCapture(2)
     leftCam.set(cv.CAP_PROP_SHARPNESS,200)
     rightCam.set(cv.CAP_PROP_SHARPNESS,200)
-    leftCam.set(cv.CAP_PROP_EXPOSURE,-6.0)
-    rightCam.set(cv.CAP_PROP_EXPOSURE,-6.0)
     leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
     leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
     rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
@@ -37,8 +35,8 @@ except:
     print(f'No Webcams')
 
 #Open Stereo-Map
-cv_file = cv2.FileStorage()
-cv_file.open('stereoMap_matlab.xml', cv2.FileStorage_READ)
+cv_file = cv.FileStorage()
+cv_file.open('../Calibration/stereoMap_matlab.xml', cv.FileStorage_READ)
 
 stereoMapL_x = cv_file.getNode('stereoMapL_x').mat()
 stereoMapL_y = cv_file.getNode('stereoMapL_y').mat()
@@ -353,11 +351,23 @@ def readRight(mode):
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
-def rectifyLeft(leftFrame):
-    return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
+def correctPosition():
+    leftCam.release()
+    leftCam = rightCam
+    if(sys == 'win32'):
+        rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+    else:
+        rightCam = cv.VideoCapture(2)
 
-def rectifyRight(leftFrame):
-    return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
+def adjustExposure(exposure):
+    leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
+    rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
+
+def rectifyLeft(leftFrame):
+    return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
+
+def rectifyRight(rightFrame):
+    return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)

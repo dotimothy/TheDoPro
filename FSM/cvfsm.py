@@ -12,7 +12,9 @@ else:
 	sys.path.insert(1,'../Vision')
 programMode = 0
 
+
 import customStereo as cs 
+
 
 # GPIO Functions 
 
@@ -54,8 +56,10 @@ def checkPower(master):
 
 # FSM Functions
 
-# Main Window Function
+
 def imagePreview(root,master,lbl):
+	if(master['lastState'] != master['settings']['state']):
+		setupPreview(root,master,lbl)
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		updateButtonState(master)
 		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Right
@@ -70,14 +74,14 @@ def imagePreview(root,master,lbl):
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
 		if(master['settings']['rectification'] == 'On'):
-			im = cs.recitfyRight(im)
+			im = cs.rectifyRight(im)
 		if(sys.platform == 'linux' or sys.platform == 'linux2'):
 			GPIO.output(master['leds']['capture']['pin'],0)
 			GPIO.output(master['leds']['flash']['pin'],0)
 	elif(master['settings']['state'] == 'Left'):
 		im = cs.readLeft(programMode)
 		if(master['settings']['rectification'] == 'On'):
-			im = cs.recitfyRight(im)
+			im = cs.rectifyLeft(im)
 		if(sys.platform == 'linux' or sys.platform == 'linux2'):
 			GPIO.output(master['leds']['capture']['pin'],0)
 			GPIO.output(master['leds']['flash']['pin'],0)
@@ -104,8 +108,8 @@ def imagePreview(root,master,lbl):
 		image_L = cs.readLeft(programMode)
 		image_R = cs.readRight(programMode)
 		if(master['settings']['rectification'] == 'On'):
-			image_L = cs.recitfyLeft(image_L)
-			image_R = cs.recitfyRight(image_R)
+			image_L = cs.rectifyLeft(image_L)
+			image_R = cs.rectifyRight(image_R)
 		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
@@ -116,22 +120,35 @@ def imagePreview(root,master,lbl):
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
+	master['lastState'] =  master['settings']['state']
 	lbl.after(50,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
+	for widget in root.winfo_children():
+		if isinstance(widget,tk.Button):
+			widget.destroy()
 	lbl.grid(row=1,column=1)
-	tk.Button(root,text="Change Camera",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1)
+	if(master['settings']['state'] != 'Capture'):
+		tk.Button(root,text="Change Camera",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1)
+	else:
+		tk.Button(root,text="Revert",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1)
 	tk.Button(root,text="Save Image",font=("Courier",28),command=lambda:turnOnSave(master)).grid(row=1,column=2)
 	tk.Button(root,text="Gallery",font=("Courier",28),command=lambda:openGallery('results')).grid(row=1,column=3)
 	tk.Button(root,text="Capture",font=("Courier",28),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
 	tk.Button(root,text="Settings",font=("Courier",28),command=lambda:configSettings(master)).grid(row=2,column=3)
+	if(programMode == 1):
+		tk.Button(root,text="Correct",font=("Courier",28),command=lambda:cs.correctPosition()).grid(row=2,column=4)
+
+def updateState(master,state):
+	master['settings']['state'] = state
+	print(f"Updated Window State to {master['settings']['state']}")
 
 def changeCamera(master):
 	if(master['settings']['state'] == 'Right'):
-		master['settings']['state'] = 'Left'
+		updateState(master,'Left')
 	else: 
 		master['settings']['state'] = 'Right'
-	print(f"Updated Window State to {master['settings']['state']}")
+		updateState(master,'Right')
 
 def turnOnSave(master):
 	master['settings']['save'] = 'On'
@@ -142,9 +159,6 @@ def openGallery(directory):
 	elif(sys.platform == 'linux' or sys.platform == 'linux2'):
 		os.system(f'pcmanfm {os.getcwd()}/results')
 
-def updateState(master,state):
-	master['settings']['state'] = state
-	print(f"Updated Window State to {master['settings']['state']}")
 
 def saveImage(im,outputDir):
 	current = localtime()
@@ -187,21 +201,34 @@ def configSettings(master):
 	flashSelection = tk.OptionMenu(root,flash,*flashModes)
 	flashSelection.grid(row=3,column=2)
 
-	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),root))
-	confirm.grid(row=4,column=2)
+
+	exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",28))
+	exposLabel.grid(row=4,column=1)
+	exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0]
+	exposure = tk.StringVar(root)
+	exposure.set(master['settings']['exposure'])
+	exposSelection = tk.OptionMenu(root,exposure,*exposModes)
+	exposSelection.grid(row=4,column=2)
+
+	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),exposure.get(),root))
+	confirm.grid(row=5,column=2)
 	
 	root.mainloop()
 
-def updateSettings(master,mode,rectification,flash,menu):
+def updateSettings(master,mode,rectification,flash,exposure,menu):
 	master['settings']['mode'] = mode
 	master['settings']['rectification'] = rectification
 	master['settings']['flash'] = flash
+	master['settings']['exposure'] = float(exposure)
+	if(programMode == 1):
+		adjustExposure(master['settings']['exposure'])
 	menu.destroy()
 
 # Test Driver
 if __name__ == '__main__':
 	# pins are physical
 	master = {	
+		'lastState': 'Right',
 		'buttons': {
 			'power': {'pin': 5},
 			'capture':{'pin': 31}, 
@@ -217,7 +244,8 @@ if __name__ == '__main__':
 			'mode': 'OpenCV',
 			'rectification': 'Off',
 			'flash': 'Off',
-			'save': 'Off'
+			'save': 'Off',
+			'exposure':-6.0
 		}
 	}
 
@@ -234,6 +262,7 @@ if __name__ == '__main__':
 	im = None
 	setupPreview(root,master,lbl)
 	imagePreview(root,master,lbl)
+	cs.adjustExposure(master['settings']['exposure'])
 	root.mainloop()
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		GPIO.cleanup()

@@ -6,3 +6,4 @@ jupyter
 scipy
 pypfm
 adafruit-circuitpython-mcp3xxx
+open3d
