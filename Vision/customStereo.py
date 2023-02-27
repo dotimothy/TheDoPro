@@ -45,8 +45,8 @@ stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=128,blockSize=17)
-stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=128, blockSize=9, P1=8*9*9, P2=32*9*9, disp12MaxDiff=1, uniquenessRatio=10, speckleWindowSize=50, speckleRange=32)
+stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=25)
+stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=1, uniquenessRatio=10, speckleWindowSize=100, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
