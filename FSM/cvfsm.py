@@ -93,16 +93,20 @@ def imagePreview(root,master,lbl):
 			else: 
 				GPIO.output(master['leds']['flash']['pin'],0)
 		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
-		config = {'OpenCV': {
+		config = {'OpenCV_BM': {
 			'algor':0,
 			'downscale':1
 		},
-		'Cost Block':{
+		'OpenCV_SGBM': {
 			'algor':1,
+			'downscale':1
+		},
+		'Cost Block':{
+			'algor':2,
 			'downscale':4
 		},
 		'Multiblock':{
-			'algor':2,
+			'algor':3,
 			'downscale':4
 		}}
 		image_L = cs.readLeft(programMode)
@@ -137,7 +141,7 @@ def setupPreview(root,master,lbl):
 	tk.Button(root,text="Capture",font=("Courier",28),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
 	tk.Button(root,text="Settings",font=("Courier",28),command=lambda:configSettings(master)).grid(row=2,column=3)
 	if(programMode == 1):
-		tk.Button(root,text="Correct",font=("Courier",28),command=lambda:cs.correctPosition()).grid(row=2,column=4)
+		tk.Button(root,text="Correct",font=("Courier",28),command=lambda:cs.correctPosition()).grid(row=3,column=3)
 
 def updateState(master,state):
 	master['settings']['state'] = state
@@ -179,7 +183,7 @@ def configSettings(master):
 	
 	modeLabel = tk.Label(root,text="Disparity Mode: ",font=("Courier",28))
 	modeLabel.grid(row=1,column=1)
-	modes = ['OpenCV','Cost Block','Multiblock']
+	modes = ['OpenCV_BM','OpenCV_SGBM','Cost Block','Multiblock']
 	mode = tk.StringVar(root)
 	mode.set(master['settings']['mode'])
 	modeSelection = tk.OptionMenu(root,mode,*modes)
@@ -204,7 +208,7 @@ def configSettings(master):
 
 	exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",28))
 	exposLabel.grid(row=4,column=1)
-	exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0]
+	exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-12.0]
 	exposure = tk.StringVar(root)
 	exposure.set(master['settings']['exposure'])
 	exposSelection = tk.OptionMenu(root,exposure,*exposModes)
@@ -221,7 +225,7 @@ def updateSettings(master,mode,rectification,flash,exposure,menu):
 	master['settings']['flash'] = flash
 	master['settings']['exposure'] = float(exposure)
 	if(programMode == 1):
-		adjustExposure(master['settings']['exposure'])
+		cs.adjustExposure(master['settings']['exposure'])
 	menu.destroy()
 
 # Test Driver
@@ -241,7 +245,7 @@ if __name__ == '__main__':
 		},
 		'settings': {
 			'state': 'Right',
-			'mode': 'OpenCV',
+			'mode': 'OpenCV_BM',
 			'rectification': 'Off',
 			'flash': 'Off',
 			'save': 'Off',

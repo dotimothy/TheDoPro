@@ -8,6 +8,7 @@ from scipy import ndimage as nd
 from multiprocessing import Process, Queue
 from os import cpu_count
 import sys
+from math import *
 
 # Deprecated CUDA Support 
 # haveGPU = False
@@ -43,6 +44,9 @@ stereoMapL_y = cv_file.getNode('stereoMapL_y').mat()
 stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
+# OpenCV Stereo Objects
+stereoBM = cv.StereoBM_create(numDisparities=128,blockSize=17)
+stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=128, blockSize=9, P1=8*9*9, P2=32*9*9, disp12MaxDiff=1, uniquenessRatio=10, speckleWindowSize=50, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
@@ -339,25 +343,30 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 
     return ncc
 
+counter = 0
+depths = [200,150,75,50]
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/tim_L.png',1),cv.COLOR_BGR2RGB)
+        global counter
+        counter = counter + 1
+        return cv.cvtColor(cv.imread(f'../Images/L_{str(depths[trunc((counter % 16)/4)])}.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
-        return cv.cvtColor(cv.imread('../Images/tim_R.png',1),cv.COLOR_BGR2RGB)
+        global counter
+        counter = counter + 1
+        return cv.cvtColor(cv.imread(f'../Images/R_{str(depths[trunc((counter % 16)/4)])}.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
 def correctPosition():
-    leftCam.release()
+    global leftCam
+    global rightCam
+    temp = leftCam
     leftCam = rightCam
-    if(sys == 'win32'):
-        rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
-    else:
-        rightCam = cv.VideoCapture(2)
+    rightCam = temp
 
 def adjustExposure(exposure):
     leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
@@ -372,33 +381,35 @@ def rectifyRight(rightFrame):
 def processCapture(leftFrame,rightFrame,algor,downscale):
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
     rightFrameGray = cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY)
-    if(algor != 0):
+    if(algor != 0 and algor != 1):
         leftFrameGray = leftFrameGray + 1e-1
         rightFrameGray = rightFrameGray + 1e-1
     if(downscale != 1):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
-    if(algor == 0): #OpenCV
-        stereo = cv.StereoBM_create(numDisparities=128,blockSize=25)
-        disparity = stereo.compute(leftFrameGray,rightFrameGray)      
+    if(algor == 0): #OpenCV Block Matching
+        disparity = stereoBM.compute(leftFrameGray,rightFrameGray)      
         disparity = ((disparity+16)/4 - 1).astype(np.uint8)
-    elif(algor == 1): #Cost Block Matching
+    elif(algor == 1): #OpenCV Semi-Global Block Matching
+        disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray)      
+        disparity = ((disparity+16)/4 - 1).astype(np.uint8)
+    elif(algor == 2): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]
-    elif(algor == 2): #Multiblock
+    elif(algor == 3): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
-    elif(algor == 3): #Multiprocess Cost Block
+    elif(algor == 4): #Multiprocess Cost Block
         disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 16, cpu_count())
-    elif(algor == 4): #NCC Cost Block
+    elif(algor == 5): #NCC Cost Block
         disparity = vec_NCC(leftFrameGray,rightFrameGray,3,3,32)
-    elif(algor == 5): #Cost Block Matching GPU
+    elif(algor == 6): #Cost Block Matching GPU
         if(haveGPU):
             result = vec_cost_block_matching_gpu(leftFrameGray, rightFrameGray, 9, 9, 8)
         else:
             print(f'No GPU: Fallback to CPU Computation')
             result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 8)
         disparity = result[0][:,:,0]
-    elif(algor == 6): #Multiblock GPU
+    elif(algor == 7): #Multiblock GPU
         if(haveGPU): 
             result = multiblock_gpu(leftFrameGray,rightFrameGray,9,9,21,3,3,21,16)
         else:
@@ -415,7 +426,7 @@ def extractIntensity(disparity,intensity):
     for i in range(disparity.shape[0]): 
         for j in range(disparity.shape[1]):
             pixel = gray[i,j]
-            if((pixel <= int(intensity-30) or pixel >= int(intensity+30))):
+            if((pixel <= int(intensity-50) or pixel >= int(intensity+50))):
                 filtered[i,j,2] = 0
                 filtered[i,j,1] = 0
                 filtered[i,j,0] = 0
@@ -423,14 +434,14 @@ def extractIntensity(disparity,intensity):
 
 
 if __name__ == "__main__":
-    #image_L = cv.imread('../Images/L_50.png',0)
-    #image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-    #image_R = cv.imread('../Images/R_50.png', 0)
-    #image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
-    image_L = readLeft(1)
-    image_R = readRight(1)
+    image_L = cv.imread('../Images/tim_L.png',0)
+    image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
+    image_R = cv.imread('../Images/tim_R.png', 0)
+    image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+    # image_L = readLeft(1)
+    # image_R = readRight(1)
     start = time.time()
-    disparity = cv.cvtColor(processCapture(image_L,image_R,0,1),cv.COLOR_BGR2RGB)
+    disparity = cv.cvtColor(processCapture(image_L,image_R,1,1),cv.COLOR_BGR2RGB)
     #disparity = cv.imread('../Images/openCV.png')
     #test = cv.cvtColor(test,cv.COLOR_BGR2RGB)
     #stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
