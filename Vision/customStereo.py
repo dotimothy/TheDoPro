@@ -47,7 +47,7 @@ stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=11)
+stereoBM = cv.StereoBM_create(numDisparities=64,blockSize=21)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=1, uniquenessRatio=10, speckleWindowSize=100, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
@@ -96,7 +96,7 @@ def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
       LR_cost_str = L_residual*R_residual
       LR_cost = LR_cost_str.sum(axis=0).reshape(idx.shape)
       
-      cost_vec[:, :, d] = LR_cost/np.sqrt(L2_cost*R2_cost)
+      cost_vec[:, :, d] = LR_cost/(np.sqrt(L2_cost*R2_cost)+1e-3)
 
     return cost_vec, row_bound_U-row_bound_L, col_bound_U-col_bound_L
 
@@ -346,11 +346,12 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 
 counter = 0
 depths = [22,21,20,19,18]
+interval = 20
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
         counter = counter + 1
-        return cv.cvtColor(cv.imread(f'../Images/Mug_L_{str(depths[trunc((counter % 20)/4)])}.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/Mug_L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -358,7 +359,7 @@ def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
         counter = counter + 1
-        return cv.cvtColor(cv.imread(f'../Images/Mug_R_{str(depths[trunc((counter % 20)/4)])}.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/Mug_R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -391,16 +392,14 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     if(algor == 0): #OpenCV Block Matching
         disparity = stereoBM.compute(leftFrameGray,rightFrameGray)      
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
-        disparity = cv.normalize(disparity,disparity,0,255,cv.NORM_MINMAX)
     elif(algor == 1): #OpenCV Semi-Global Block Matching
         disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray)      
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalzie
-        disparity = cv.normalize(disparity,disparity,0,255,cv.NORM_MINMAX)
     elif(algor == 2): #Cost Block Matching
-        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 3, 3, 16)
+        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 5, 5, 16)
         disparity = result[0][:,:,0]
     elif(algor == 3): #Multiblock
-        disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
+        disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 5, 5, 7, 7, 16)
     elif(algor == 4): #Multiprocess Cost Block
         disparity = mp_cost_block(leftFrameGray,rightFrameGray,9, 9, 16, cpu_count())
     elif(algor == 5): #NCC Cost Block
@@ -420,10 +419,11 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
             disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
-    if(algor != 0 or algor != 1):
+    if(algor < 2):
+        disparity = cv.normalize(disparity,disparity,0,255,cv.NORM_MINMAX)
         disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2RGB)
-    else: 
-        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)),cv.COLOR_RGBA2RGB)
+    else:
+        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 if __name__ == "__main__":
