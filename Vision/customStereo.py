@@ -32,6 +32,8 @@ try:
     leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
     rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
     rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
+    leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE, 3)
+    rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,3)
 except:
     print(f'No Webcams')
 
@@ -45,7 +47,7 @@ stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=25)
+stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=11)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=1, uniquenessRatio=10, speckleWindowSize=100, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
@@ -344,12 +346,12 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
     return ncc
 
 counter = 0
-depths = [200,150,75,50]
+depths = [22,21,20,19,18]
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
         counter = counter + 1
-        return cv.cvtColor(cv.imread(f'../Images/L_{str(depths[trunc((counter % 16)/4)])}.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/Mug_L_{str(depths[trunc((counter % 20)/4)])}.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -357,7 +359,7 @@ def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
         counter = counter + 1
-        return cv.cvtColor(cv.imread(f'../Images/R_{str(depths[trunc((counter % 16)/4)])}.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/Mug_R_{str(depths[trunc((counter % 20)/4)])}.png',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -389,10 +391,10 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV Block Matching
         disparity = stereoBM.compute(leftFrameGray,rightFrameGray)      
-        disparity = ((disparity+16)/4 - 1).astype(np.uint8)
+        #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
     elif(algor == 1): #OpenCV Semi-Global Block Matching
         disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray)      
-        disparity = ((disparity+16)/4 - 1).astype(np.uint8)
+        #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalzie
     elif(algor == 2): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 9, 9, 16)
         disparity = result[0][:,:,0]
@@ -417,21 +419,13 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
             disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 21, 3, 3, 21, 16)
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
-    disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
+    if(algor != 0 and algor != 1): 
+        disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
+        disparity = cv.cvtColor(disparity,cv.COLOR_BGR2RGB)
+    else:
+        disparity = cv.normalize(disparity,disparity,0,255,cv.NORM_MINMAX)
+
     return disparity
-
-def extractIntensity(disparity,intensity):
-    gray = cv.cvtColor(disparity,cv.COLOR_BGR2GRAY)
-    filtered = disparity.copy()
-    for i in range(disparity.shape[0]): 
-        for j in range(disparity.shape[1]):
-            pixel = gray[i,j]
-            if((pixel <= int(intensity-50) or pixel >= int(intensity+50))):
-                filtered[i,j,2] = 0
-                filtered[i,j,1] = 0
-                filtered[i,j,0] = 0
-    return filtered
-
 
 if __name__ == "__main__":
     image_L = cv.imread('../Images/tim_L.png',0)

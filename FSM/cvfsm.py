@@ -10,7 +10,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 1
+programMode = 0
 
 
 import customStereo as cs 
@@ -128,6 +128,7 @@ def imagePreview(root,master,lbl):
 	lbl.after(50,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
+	root.iconbitmap('../Images/favicon.ico')
 	for widget in root.winfo_children():
 		if isinstance(widget,tk.Button):
 			widget.destroy()
@@ -176,6 +177,7 @@ def saveImage(im,outputDir):
 def configSettings(master):
 	root = tk.Tk()
 	root.title('Settings')
+	root.iconbitmap('../Images/favicon.ico')
 	root.geometry('960x540')
 
 	title = tk.Label(root,text='Settings',font=("Courier",30))
