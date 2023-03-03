@@ -128,7 +128,8 @@ def imagePreview(root,master,lbl):
 	lbl.after(50,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
-	root.iconbitmap('../Images/favicon.ico')
+	if(sys.platform == 'win32'):
+		root.iconbitmap('../Images/favicon.ico')
 	for widget in root.winfo_children():
 		if isinstance(widget,tk.Button):
 			widget.destroy()
