@@ -23,9 +23,6 @@ try:
     if(sys.platform == 'win32'):
         leftCam = cv.VideoCapture(0,cv.CAP_DSHOW)
         rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
-    elif(sys.platform == 'linux'):
-        leftCam = cv.VideoCapture(0)
-        rightCam = cv.VideoCapture(1)
     else:
         leftCam = cv.VideoCapture(1)
         rightCam = cv.VideoCapture(2)
