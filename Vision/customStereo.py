@@ -47,7 +47,7 @@ stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=64,blockSize=15)
+stereoBM = cv.StereoBM_create(numDisparities=64,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
@@ -374,6 +374,12 @@ def adjustExposure(exposure):
     leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
     rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
 
+def adjustNumDisp(num):
+    global stereoBM
+    global stereoSGBM
+    stereoBM = StereoBM_create(numDisparities=num,blockSize=11)
+    stereoSGBM = cv.StereoSGBM_create(minDisparity=num, numDisparities=64, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
+
 def rectifyLeft(leftFrame):
     return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
@@ -391,6 +397,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV Block Matching
         disparity = stereoBM.compute(leftFrameGray,rightFrameGray)      
+        cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=20,maxDiff=2)
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
     elif(algor == 1): #OpenCV Semi-Global Block Matching
         disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray)      
@@ -423,7 +430,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F)
         disparity = cv.cvtColor(cv.applyColorMap(np.uint8(255*disparity),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
     else: 
-         disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2RGB)
+         disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 if __name__ == "__main__":

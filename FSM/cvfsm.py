@@ -14,6 +14,7 @@ programMode = 1
 
 
 import customStereo as cs 
+import ADAS
 
 
 # GPIO Functions 
@@ -212,7 +213,7 @@ def configSettings(master):
 
 	exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",28))
 	exposLabel.grid(row=4,column=1)
-	exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-12.0]
+	exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-14.0]
 	exposure = tk.StringVar(root)
 	exposure.set(master['settings']['exposure'])
 	exposSelection = tk.OptionMenu(root,exposure,*exposModes)
@@ -253,7 +254,7 @@ if __name__ == '__main__':
 			'rectification': 'Off',
 			'flash': 'Off',
 			'save': 'Off',
-			'exposure':-4.0
+			'exposure':-6.0
 		}
 	}
 
