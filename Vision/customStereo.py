@@ -25,7 +25,7 @@ try:
         rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
     else:
         leftCam = cv.VideoCapture('/dev/video0')
-        rightCam = cv.VideoCapture('/dev/video1')
+        rightCam = cv.VideoCapture('/dev/video2')
     leftCam.set(cv.CAP_PROP_SHARPNESS,200)
     rightCam.set(cv.CAP_PROP_SHARPNESS,200)
     leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
