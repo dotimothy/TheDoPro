@@ -7,3 +7,5 @@ scipy
 pypfm
 adafruit-circuitpython-mcp3xxx
 open3d
+v4l2capture
+scikit-learn

@@ -9,6 +9,8 @@ from multiprocessing import Process, Queue
 from os import cpu_count
 import sys
 from math import *
+if(sys.platform == 'linux'):
+    import v4l2capture
 
 # Deprecated CUDA Support 
 # haveGPU = False
@@ -45,8 +47,8 @@ stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=128,blockSize=11)
-stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=128, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
+stereoBM = cv.StereoBM_create(numDisparities=64,blockSize=15)
+stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 

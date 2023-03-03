@@ -249,11 +249,11 @@ if __name__ == '__main__':
 		},
 		'settings': {
 			'state': 'Right',
-			'mode': 'OpenCV_BM',
+			'mode': 'OpenCV_SGBM',
 			'rectification': 'Off',
 			'flash': 'Off',
 			'save': 'Off',
-			'exposure':-6.0
+			'exposure':-4.0
 		}
 	}
 
