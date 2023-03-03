@@ -177,8 +177,9 @@ def saveImage(im,outputDir):
 
 def configSettings(master):
 	root = tk.Tk()
+	if(sys.platform == 'win32'): 
+		root.iconbitmap('../Images/favicon.ico')
 	root.title('Settings')
-	root.iconbitmap('../Images/favicon.ico')
 	root.geometry('960x540')
 
 	title = tk.Label(root,text='Settings',font=("Courier",30))
