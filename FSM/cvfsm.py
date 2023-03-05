@@ -2,6 +2,7 @@ from time import sleep, localtime
 import os
 import cv2 as cv
 import tkinter as tk
+import tkinter.font as tkFont
 from PIL import Image, ImageTk
 import sys
 
@@ -10,7 +11,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 0
+programMode = 1
 
 
 import customStereo as cs 
@@ -109,7 +110,7 @@ def imagePreview(root,master,lbl):
 		},
 		'Multiblock':{
 			'algor':3,
-			'downscale':4
+			'downscale':8
 		}}
 		image_L = cs.readLeft(programMode)
 		image_R = cs.readRight(programMode)
@@ -117,7 +118,7 @@ def imagePreview(root,master,lbl):
 			image_L = cs.rectifyLeft(image_L)
 			image_R = cs.rectifyRight(image_R)
 		re = master['settings']['relative'] == 'On' 
-		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'],re)
+		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'],re,master['settings']['colormap'])
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
 			os.mkdir('./results')
@@ -128,7 +129,7 @@ def imagePreview(root,master,lbl):
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
 	master['lastState'] =  master['settings']['state']
-	lbl.after(50,imagePreview,root,master,lbl)
+	lbl.after(25,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
 	if(sys.platform == 'win32'):
@@ -194,6 +195,7 @@ def configSettings(master):
 	mode = tk.StringVar(root)
 	mode.set(master['settings']['mode'])
 	modeSelection = tk.OptionMenu(root,mode,*modes)
+	modeSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
 	modeSelection.grid(row=1,column=2)
 
 	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",28))
@@ -202,51 +204,68 @@ def configSettings(master):
 	rectification = tk.StringVar(root)
 	rectification.set(master['settings']['rectification'])
 	rectSelection = tk.OptionMenu(root,rectification,*rectifications)
+	rectSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
 	rectSelection.grid(row=2,column=2)
 
-	flashLabel = tk.Label(root,text="Flash: ",font=("Courier",28))
-	flashLabel.grid(row=3,column=1)
-	flashModes = ['On','Off']
-	flash = tk.StringVar(root)
-	flash.set(master['settings']['flash'])
-	flashSelection = tk.OptionMenu(root,flash,*flashModes)
-	flashSelection.grid(row=3,column=2)
-	
-	reLabel = tk.Label(root,text="Relative: ",font=("Courier",28))
-	reLabel.grid(row=4,column=1)
-	reModes = ['On','Off']
-	relative = tk.StringVar(root)
-	relative.set(master['settings']['relative'])
-	reSelection = tk.OptionMenu(root,relative,*reModes)
-	reSelection.grid(row=4,column=2)
-
 	disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",28))
-	disLabel.grid(row=5,column=1)
+	disLabel.grid(row=3,column=1)
 	disModes = [16,32,64,128,256]
 	disparity = tk.StringVar(root)
 	disparity.set(master['settings']['disparity'])
-	reSelection = tk.OptionMenu(root,disparity,*disModes)
-	reSelection.grid(row=5,column=2)
+	disSelection = tk.OptionMenu(root,disparity,*disModes)
+	disSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	disSelection.grid(row=3,column=2)
+
+	cmapLabel = tk.Label(root,text="Color Map: ",font=("Courier",28))
+	cmapLabel.grid(row=4,column=1)
+	cmapModes = ['Jet','Gray','Bone','Rainbow','HSV','Viridis']
+	cmap = tk.StringVar(root)
+	cmap.set(master['settings']['colormap'].capitalize())
+	cmapSelection = tk.OptionMenu(root,cmap,*cmapModes)
+	cmapSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	cmapSelection.grid(row=4,column=2)
+
+	relative = tk.StringVar(root)
+	relative.set(master['settings']['relative'])
+	if(master['settings']['mode'] == 'OpenCV_SGBM' or master['settings']['mode'] == 'OpenCV_BM'):
+		reLabel = tk.Label(root,text="Relative: ",font=("Courier",28))
+		reLabel.grid(row=5,column=1)
+		reModes = ['On','Off']
+		reSelection = tk.OptionMenu(root,relative,*reModes)
+		reSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		reSelection.grid(row=5,column=2)
+
+	flash = tk.StringVar(root)
+	flash.set(master['settings']['flash'])
+	if(programMode == 1):
+		flashLabel = tk.Label(root,text="Flash: ",font=("Courier",28))
+		flashLabel.grid(row=6,column=1)
+		flashModes = ['On','Off']
+		flashSelection = tk.OptionMenu(root,flash,*flashModes)
+		flashSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		flashSelection.grid(row=6,column=2)
 
 	exposure = tk.StringVar(root)
 	exposure.set(master['settings']['exposure'])
 	if(programMode == 1):
 		exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",28))
-		exposLabel.grid(row=6,column=1)
+		exposLabel.grid(row=7,column=1)
 		exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-14.0]
 		exposSelection = tk.OptionMenu(root,exposure,*exposModes)
-		exposSelection.grid(row=6,column=2)
+		exposSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		exposSelection.grid(row=7,column=2)
 
-	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),relative.get(),disparity.get(),exposure.get(),root))
-	confirm.grid(row=7,column=2)
+	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),disparity.get(),cmap.get(),relative.get(),flash.get(),exposure.get(),root))
+	confirm.grid(row=8,column=2)
 	
 	root.mainloop()
 
-def updateSettings(master,mode,rectification,flash,relative,disp,exposure,menu):
+def updateSettings(master,mode,rectification,disp,cmap,relative,flash,exposure,menu):
 	master['settings']['mode'] = mode
 	master['settings']['rectification'] = rectification
 	master['settings']['flash'] = flash
 	master['settings']['relative'] = relative
+	master['settings']['colormap'] = cmap.lower()
 	master['settings']['disparity'] = int(disp)
 	master['settings']['exposure'] = float(exposure)
 	if(programMode == 1):
@@ -276,6 +295,7 @@ if __name__ == '__main__':
 			'flash': 'Off',
 			'save': 'Off',
 			'relative':'Off',
+			'colormap':'jet',
 			'disparity':64,
 			'exposure':-6.0
 		}

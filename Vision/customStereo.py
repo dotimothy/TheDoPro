@@ -385,7 +385,7 @@ def rectifyLeft(leftFrame):
 def rectifyRight(rightFrame):
     return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
-def processCapture(leftFrame,rightFrame,algor,downscale,relative):
+def processCapture(leftFrame,rightFrame,algor,downscale,relative,cmap):
     # leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
     # rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
     #clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
@@ -410,7 +410,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale,relative):
         disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray) 
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalzie
     elif(algor == 2): #Cost Block Matching
-        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 5, 5, 16)
+        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 5, 5, 32)
         disparity = result[0][:,:,0]
     elif(algor == 3): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 5, 5, 7, 7, 16)
@@ -434,15 +434,30 @@ def processCapture(leftFrame,rightFrame,algor,downscale,relative):
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
     if(algor < 2):
-        disparity = cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F)
+        disparity = np.uint8(255*cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F))
         #disparity = cv.cvtColor(cv.applyColorMap(cv.equalizeHist(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
         #disparity = cv.cvtColor(cv.applyColorMap(clahe.apply(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
         if(relative):
-            disparity = cv.cvtColor(cv.applyColorMap(cv.equalizeHist(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
-        else:
-            disparity = cv.cvtColor(cv.applyColorMap(np.uint8(255*disparity),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+            disparity = cv.equalizeHist(disparity)
+        cmaps = {
+            'jet':cv.COLORMAP_JET,
+            'bone':cv.COLORMAP_BONE,
+            'rainbow':cv.COLORMAP_RAINBOW,
+            'hsv':cv.COLORMAP_HSV,
+            'viridis':cv.COLORMAP_VIRIDIS
+        }
+        if(cmap != 'gray'): #gray is just raw normalization
+            disparity = cv.cvtColor(cv.applyColorMap(disparity,cmaps[cmap]),cv.COLOR_RGB2BGR)
     else: 
-         disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
+        cmaps = {
+            'jet':cm.jet,
+            'gray':cm.gray,
+            'bone':cm.bone,
+            'rainbow':cm.rainbow,
+            'hsv':cm.hsv,
+            'viridis':cm.viridis
+        }
+        disparity = cv.cvtColor(np.uint8(cmaps[cmap](disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 # Run Code Below If Imported

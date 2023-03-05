@@ -79,7 +79,7 @@ if __name__ == '__main__':
 		left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
 		right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
 		# Compute using OpenCV SGBM HeatMap
-		disparityMap = cv.cvtColor(cs.processCapture(left,right,1,1,0),cv.COLOR_BGR2RGB)
+		disparityMap = cv.cvtColor(cs.processCapture(left,right,1,1,False,'jet'),cv.COLOR_BGR2RGB)
 		#disparity = cv.imread('result2.jpg')
 		disparityMap = disparityMap[:,64:disparityMap.shape[1]]
 		numPixels = disparityMap.shape[0]*disparityMap.shape[1]
