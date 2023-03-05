@@ -1,3 +1,7 @@
+# customStereo.py: Disparity Algorithms and The Do-Pro Configuration
+# Authors: Timothy Do, Daniel Jilani, Zaya Lazar, Harrison Nguyen
+
+# Libraries
 import PIL
 import matplotlib.pyplot as plt
 from matplotlib.pylab import cm
@@ -12,46 +16,8 @@ from math import *
 if(sys.platform == 'linux'):
     import v4l2capture
 
-# Deprecated CUDA Support 
-# haveGPU = False
-# try:
-#     import cupy as cp
-#     haveGPU = True
-# except:
-#     print(f'No GPU Avaliable for cupy')
 
-# Tries and Open the Cameras #
-try:
-    if(sys.platform == 'win32'):
-        leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
-        rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
-    else:
-        leftCam = cv.VideoCapture('/dev/video0')
-        rightCam = cv.VideoCapture('/dev/video2')
-    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
-    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
-    leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-    leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
-    rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-    rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
-    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
-    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
-except:
-    print(f'No Webcams')
-
-#Open Stereo-Map
-cv_file = cv.FileStorage()
-cv_file.open('../Calibration/stereoMap_matlab.xml', cv.FileStorage_READ)
-
-stereoMapL_x = cv_file.getNode('stereoMapL_x').mat()
-stereoMapL_y = cv_file.getNode('stereoMapL_y').mat()
-stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
-stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
-
-# OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=15)
-stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
-
+# Disparity Computation Functions
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
     # Image Dimension Specifications
@@ -346,9 +312,47 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 
     return ncc
 
+# Camera Configurations
+
+def checkCams():
+    global leftCam
+    global rightCam 
+    return leftCam != None and rightCam != None
+
+def adjustExposure(exposure):
+    leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
+    rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
+
+# OpenCV Stereo Objects
+stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=15)
+stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
+
+def adjustNumDisp(num):
+    global stereoBM
+    global stereoSGBM
+    stereoBM = cv.StereoBM_create(numDisparities=num,blockSize=15)
+    stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=num, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
+
+def correctPosition():
+    global leftCam
+    global rightCam
+    temp = leftCam
+    leftCam = rightCam
+    rightCam = temp
+
+#OpenCV StereoMap for Rectification
+cv_file = cv.FileStorage()
+cv_file.open('../Calibration/stereoMap_matlab.xml', cv.FileStorage_READ)
+
+stereoMapL_x = cv_file.getNode('stereoMapL_x').mat()
+stereoMapL_y = cv_file.getNode('stereoMapL_y').mat()
+stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
+stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
+
+# Parameters for the Simulation
 counter = 0
-depths = [6,5,4,3,2,1]
-interval = 20
+depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+interval = 6
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
@@ -365,23 +369,6 @@ def readRight(mode):
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
-def correctPosition():
-    global leftCam
-    global rightCam
-    temp = leftCam
-    leftCam = rightCam
-    rightCam = temp
-
-def adjustExposure(exposure):
-    leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
-    rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
-
-def adjustNumDisp(num):
-    global stereoBM
-    global stereoSGBM
-    stereoBM = StereoBM_create(numDisparities=num,blockSize=11)
-    stereoSGBM = cv.StereoSGBM_create(minDisparity=num, numDisparities=64, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
-
 def rectifyLeft(leftFrame):
     return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
@@ -391,11 +378,14 @@ def rectifyRight(rightFrame):
 def processCapture(leftFrame,rightFrame,algor,downscale):
     # leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
     # rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
-    clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    #clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     # leftFrameGray = clahe.apply(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
     # rightFrameGray = clahe.apply(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
-    leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
-    rightFrameGray = cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY)
+    if(len(leftFrame.shape) > 2 or len(rightFrame.shape) > 2):
+        leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
+        rightFrameGray = cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY)
+    else:
+        leftFrameGray, rightFrameGray = leftFrame, rightFrame
     if(algor != 0 and algor != 1):
         leftFrameGray = leftFrameGray + 1e-1
         rightFrameGray = rightFrameGray + 1e-1
@@ -442,15 +432,50 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
          disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
+# Run Code Below If Imported
+
+# Deprecated CUDA Support 
+# haveGPU = False
+# try:
+#     import cupy as cp
+#     haveGPU = True
+# except:
+#     print(f'No GPU Avaliable for cupy')
+
+# Tries and Open the Cameras #
+if(sys.platform == 'win32'):
+    leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+    rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
+else:
+    leftCam = cv.VideoCapture('/dev/video0')
+    rightCam = cv.VideoCapture('/dev/video2')
+if(checkCams()):
+    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
+    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
+    leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+    leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+    rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+    rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
+    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+else:
+    print(f'No Webcams')
+
+
+
 if __name__ == "__main__":
-    depths = [6,5,4,3,2,1]
+    depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+    adjustNumDisp(64)
     for depth in depths: 
         left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
         right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
         disparityBM = stereoBM.compute(left,right)
         disparitySGBM = stereoSGBM.compute(left,right)
-        disparityBM = disparityBM[:,256:disparityBM.shape[1]]
-        disparitySGBM = disparitySGBM[:,256:disparitySGBM.shape[1]]
+        BMMap = cv.cvtColor(processCapture(left,right,0,1),cv.COLOR_BGR2RGB)
+        SGBMMap = cv.cvtColor(processCapture(left,right,1,1),cv.COLOR_BGR2RGB)
+        disparitySGBM = disparitySGBM[:,64:disparitySGBM.shape[1]].astype(np.float32)/16
+        cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
+        cv.imwrite(f'../Images/Pillow/D_SGBM_{depth}.jpg',SGBMMap)
         np.savetxt(f'../Images/Pillow/BM_{depth}.csv',disparityBM,delimiter=",")
         np.savetxt(f'../Images/Pillow/SGBM_{depth}.csv',disparitySGBM,delimiter=",")
 
