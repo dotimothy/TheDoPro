@@ -23,8 +23,8 @@ if(sys.platform == 'linux'):
 # Tries and Open the Cameras #
 try:
     if(sys.platform == 'win32'):
-        leftCam = cv.VideoCapture(0,cv.CAP_DSHOW)
-        rightCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+        leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+        rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
     else:
         leftCam = cv.VideoCapture('/dev/video0')
         rightCam = cv.VideoCapture('/dev/video2')
@@ -34,6 +34,8 @@ try:
     leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
     rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
     rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
+    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
 except:
     print(f'No Webcams')
 
@@ -47,8 +49,8 @@ stereoMapR_x = cv_file.getNode('stereoMapR_x').mat()
 stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=64,blockSize=17)
-stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=64, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
+stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=15)
+stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
 
@@ -345,13 +347,13 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
     return ncc
 
 counter = 0
-depths = [22,21,20,19,18]
+depths = [6,5,4,3,2,1]
 interval = 20
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
         counter = counter + 1
-        return cv.cvtColor(cv.imread(f'../Images/Mug_L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -359,7 +361,7 @@ def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
         counter = counter + 1
-        return cv.cvtColor(cv.imread(f'../Images/Mug_R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.png',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
 
@@ -387,6 +389,11 @@ def rectifyRight(rightFrame):
     return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
 def processCapture(leftFrame,rightFrame,algor,downscale):
+    # leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
+    # rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
+    clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    # leftFrameGray = clahe.apply(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
+    # rightFrameGray = clahe.apply(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
     leftFrameGray = cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY)
     rightFrameGray = cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY)
     if(algor != 0 and algor != 1):
@@ -400,7 +407,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=20,maxDiff=2)
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
     elif(algor == 1): #OpenCV Semi-Global Block Matching
-        disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray)      
+        disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray) 
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalzie
     elif(algor == 2): #Cost Block Matching
         result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 5, 5, 16)
@@ -428,28 +435,37 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
     if(algor < 2):
         disparity = cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F)
+        #disparity = cv.cvtColor(cv.applyColorMap(cv.equalizeHist(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+        #disparity = cv.cvtColor(cv.applyColorMap(clahe.apply(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
         disparity = cv.cvtColor(cv.applyColorMap(np.uint8(255*disparity),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
     else: 
          disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 if __name__ == "__main__":
-    image_L = cv.imread('../Images/tim_L.png',0)
-    image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
-    image_R = cv.imread('../Images/tim_R.png', 0)
-    image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+    depths = [6,5,4,3,2,1]
+    for depth in depths: 
+        left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
+        right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
+        disparityBM = stereoBM.compute(left,right)
+        disparitySGBM = stereoSGBM.compute(left,right)
+        disparityBM = disparityBM[:,256:disparityBM.shape[1]]
+        disparitySGBM = disparitySGBM[:,256:disparitySGBM.shape[1]]
+        np.savetxt(f'../Images/Pillow/BM_{depth}.csv',disparityBM,delimiter=",")
+        np.savetxt(f'../Images/Pillow/SGBM_{depth}.csv',disparitySGBM,delimiter=",")
+
     # image_L = readLeft(1)
     # image_R = readRight(1)
-    start = time.time()
-    disparity = cv.cvtColor(processCapture(image_L,image_R,1,1),cv.COLOR_BGR2RGB)
+    # start = time.time()
+    # disparity = cv.cvtColor(processCapture(image_L,image_R,1,1),cv.COLOR_BGR2RGB)
     #disparity = cv.imread('../Images/openCV.png')
     #test = cv.cvtColor(test,cv.COLOR_BGR2RGB)
     #stereo = cv.StereoBM_create(numDisparities=64, blockSize=9)
     #test = stereo.compute(image_L, image_R)
-    print(f'Finished in {time.time() - start} seconds')
-    cv.imshow('result',disparity)
-    cv.imwrite('./result.png',disparity)
-    cv.waitKey(2000)
+    # print(f'Finished in {time.time() - start} seconds')
+    # cv.imshow('result',disparity)
+    # cv.imwrite('./result.png',disparity)
+    # cv.waitKey(2000)
 
 
     # image_L = cv.imread('../Images/left_piano.png', 1)

@@ -10,7 +10,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 1
+programMode = 0
 
 
 import customStereo as cs 

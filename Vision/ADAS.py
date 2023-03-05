@@ -66,14 +66,15 @@ def ADASKMeans(disparity,K):
 
 
 if __name__ == '__main__':
-	while True:
-		left = cs.rectifyLeft(cs.readLeft(1))
-		right = cs.rectifyRight(cs.readRight(1))
+	num = 0
+	while num < 1:
+		left = cs.rectifyLeft(cs.readLeft(0))
+		right = cs.rectifyRight(cs.readRight(0))
 		# Compute using OpenCV SGBM
 		disparity = cv.cvtColor(cs.processCapture(left,right,1,1),cv.COLOR_BGR2RGB)
 		#disparity = cv.imread('result2.jpg')
-		disparity = disparity[:,64:disparity.shape[1]]
-		# cv.imwrite('cropped.png',disparity)
+		disparity = disparity[:,256:disparity.shape[1]]
+		cv.imwrite('cropped.png',disparity)
 		clusters, centers = ADASKMeans(disparity,3)
 		cv.imshow('cluster',clusters)
 		classifications = []
@@ -81,6 +82,7 @@ if __name__ == '__main__':
 			classifications.append(classifyCenter(center[2],center[1],center[0]))
 		detect = True in (classification == 1 for classification in classifications)
 		print(f'Detected: {detect}')
+		num = num + 1
 		cv.waitKey(5)
 		
 	# close = extractIntensity(clusters,0)
