@@ -312,6 +312,15 @@ def vec_NCC(image_L_gray, image_R_gray, block_x, block_y, disp):
 
     return ncc
 
+def rawDispToPix(raw):
+    return raw.astype(np.float32)/16
+
+def disparityToDepthScanning(disparity):
+    return 613.33*np.power(disparity.clip(min=0.00001),-1.001)
+
+def disparityToDepthADAS(disparity):
+    return 264.2*np.power(disparity.clip(min=0.00001),-0.789)
+
 # Camera Configurations
 
 def checkCams():
@@ -393,7 +402,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         leftFrameGray = cv.resize(leftFrameGray,(int(leftFrameGray.shape[1]/downscale),int(leftFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV Block Matching
-        disparity = stereoBM.compute(leftFrameGray,rightFrameGray)      
+        disparity = stereoBM.compute(leftFrameGray,rightFrameGray)     
         cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=20,maxDiff=2)
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
     elif(algor == 1): #OpenCV Semi-Global Block Matching
@@ -464,20 +473,33 @@ else:
 
 
 if __name__ == "__main__":
-    depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+
     adjustNumDisp(64)
-    for depth in depths: 
-        left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
-        right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
-        disparityBM = stereoBM.compute(left,right)
-        disparitySGBM = stereoSGBM.compute(left,right)
-        BMMap = cv.cvtColor(processCapture(left,right,0,1),cv.COLOR_BGR2RGB)
-        SGBMMap = cv.cvtColor(processCapture(left,right,1,1),cv.COLOR_BGR2RGB)
-        disparitySGBM = disparitySGBM[:,64:disparitySGBM.shape[1]].astype(np.float32)/16
-        cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
-        cv.imwrite(f'../Images/Pillow/D_SGBM_{depth}.jpg',SGBMMap)
-        np.savetxt(f'../Images/Pillow/BM_{depth}.csv',disparityBM,delimiter=",")
-        np.savetxt(f'../Images/Pillow/SGBM_{depth}.csv',disparitySGBM,delimiter=",")
+    left = readLeft(0)
+    right = readRight(0)
+    disparitySGBM = stereoSGBM.compute(left,right)
+    depthSGBM = disparityToDepthADAS(rawDispToPix(disparitySGBM))
+    depthSGBM = cv.normalize(depthSGBM,None,0,1,cv.NORM_MINMAX,cv.CV_32F)
+    depthMap = cv.cvtColor(cv.applyColorMap(np.uint8(255*depthSGBM),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+    cv.imwrite('depth.jpg',depthMap)
+    dispMap = processCapture(left,right,1,1)
+    cv.imwrite('disp.jpg',dispMap)
+
+
+    # depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+    # adjustNumDisp(64)
+    # for depth in depths: 
+    #     left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
+    #     right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
+    #     disparityBM = stereoBM.compute(left,right)
+    #     disparitySGBM = stereoSGBM.compute(left,right)
+    #     BMMap = cv.cvtColor(processCapture(left,right,0,1),cv.COLOR_BGR2RGB)
+    #     SGBMMap = cv.cvtColor(processCapture(left,right,1,1),cv.COLOR_BGR2RGB)
+    #     disparitySGBM = disparitySGBM[:,64:disparitySGBM.shape[1]].astype(np.float32)/16
+    #     cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
+    #     cv.imwrite(f'../Images/Pillow/D_SGBM_{depth}.jpg',SGBMMap)
+    #     np.savetxt(f'../Images/Pillow/BM_{depth}.csv',disparityBM,delimiter=",")
+    #     np.savetxt(f'../Images/Pillow/SGBM_{depth}.csv',disparitySGBM,delimiter=",")
 
     # image_L = readLeft(1)
     # image_R = readRight(1)
