@@ -42,48 +42,61 @@ def extractIntensity(image,intensity):
 
 #Classify K-Means center as being a cluster that's either close,far,or in-between
 #Return: 0 - far, 0.5 - middle, 1 - close,
-def classifyCenter(r,g,b):
-	if(r >= 1.75*g and r >= 1.75*b):
+def classifyCenter(r,g,b,clusterCount,numPixels):
+	if(r >= 1.25*g and r >= 1.25*b and clusterCount >= 0.25*numPixels):
 		return 1
 	elif(b >= g and b >= r):
 		return 0
 	return 0.5
 
-# Calculates Clustering given Disparity for ADAS 
-def ADASKMeans(disparity,K):
+# Calculates Clustering given Disparity Map for ADAS 
+def ADASMapKMeans(disparity,K):
 	pixels = np.float32(disparity.reshape((-1, 3)))
 
 	criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 3*K, 1.0)
 
 	comp, labels, centers = cv.kmeans(pixels, K, None, criteria, 10, cv.KMEANS_RANDOM_CENTERS)
 
+
 	centers = np.uint8(centers)
+	counts = np.bincount(labels.flatten())
 	segmented = centers[labels.flatten()]
 	segmented = segmented.reshape(disparity.shape)
 	 
-	return segmented,centers
+	return segmented,centers,counts
 
 
 
 if __name__ == '__main__':
-	num = 0
-	while num < 1:
-		left = cs.rectifyLeft(cs.readLeft(0))
-		right = cs.rectifyRight(cs.readRight(0))
-		# Compute using OpenCV SGBM
-		disparity = cv.cvtColor(cs.processCapture(left,right,1,1),cv.COLOR_BGR2RGB)
+	# Parameters for the Simulation
+	from math import *
+	depths = [12,15,18,21,24,27,30,33,36]
+	interval = 4
+	counter = 0
+	cs.adjustNumDisp(64)
+	while True:
+		# Images
+		left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
+		right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
+		# Compute using OpenCV SGBM HeatMap
+		disparityMap = cv.cvtColor(cs.processCapture(left,right,1,1,0),cv.COLOR_BGR2RGB)
 		#disparity = cv.imread('result2.jpg')
-		disparity = disparity[:,256:disparity.shape[1]]
-		cv.imwrite('cropped.png',disparity)
-		clusters, centers = ADASKMeans(disparity,3)
-		cv.imshow('cluster',clusters)
-		classifications = []
-		for center in centers:
-			classifications.append(classifyCenter(center[2],center[1],center[0]))
-		detect = True in (classification == 1 for classification in classifications)
+		disparityMap = disparityMap[:,64:disparityMap.shape[1]]
+		numPixels = disparityMap.shape[0]*disparityMap.shape[1]
+		#cv.imwrite('cropped.png',disparityMap)
+		mapClusters, mapCenters, mapCounts = ADASMapKMeans(disparityMap,3)
+		cv.imshow('cluster',mapClusters)
+		mapClassifications = []
+		for i, center in enumerate(mapCenters):
+			mapClassifications.append(classifyCenter(center[2],center[1],center[0],mapCounts[i],numPixels))
+		detect = (True in (classification == 1 for classification in mapClassifications)) 
 		print(f'Detected: {detect}')
-		num = num + 1
-		cv.waitKey(5)
+		print(mapClassifications)
+		print(100*mapCounts/numPixels)
+		print()
+		counter = counter  + 1
+		prev = mapClassifications
+		cv.waitKey(1)
 		
 	# close = extractIntensity(clusters,0)
 	# mid = extractIntensity(clusters,128)

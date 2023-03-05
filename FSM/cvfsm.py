@@ -116,7 +116,8 @@ def imagePreview(root,master,lbl):
 		if(master['settings']['rectification'] == 'On'):
 			image_L = cs.rectifyLeft(image_L)
 			image_R = cs.rectifyRight(image_R)
-		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'])
+		re = master['settings']['relative'] == 'On' 
+		im = cs.processCapture(image_L,image_R,config[master['settings']['mode']]['algor'],config[master['settings']['mode']]['downscale'],re)
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
 			os.mkdir('./results')
@@ -210,28 +211,47 @@ def configSettings(master):
 	flash.set(master['settings']['flash'])
 	flashSelection = tk.OptionMenu(root,flash,*flashModes)
 	flashSelection.grid(row=3,column=2)
+	
+	reLabel = tk.Label(root,text="Relative: ",font=("Courier",28))
+	reLabel.grid(row=4,column=1)
+	reModes = ['On','Off']
+	relative = tk.StringVar(root)
+	relative.set(master['settings']['relative'])
+	reSelection = tk.OptionMenu(root,relative,*reModes)
+	reSelection.grid(row=4,column=2)
 
+	disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",28))
+	disLabel.grid(row=5,column=1)
+	disModes = [16,32,64,128,256]
+	disparity = tk.StringVar(root)
+	disparity.set(master['settings']['disparity'])
+	reSelection = tk.OptionMenu(root,disparity,*disModes)
+	reSelection.grid(row=5,column=2)
 
-	exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",28))
-	exposLabel.grid(row=4,column=1)
-	exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-14.0]
 	exposure = tk.StringVar(root)
 	exposure.set(master['settings']['exposure'])
-	exposSelection = tk.OptionMenu(root,exposure,*exposModes)
-	exposSelection.grid(row=4,column=2)
+	if(programMode == 1):
+		exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",28))
+		exposLabel.grid(row=6,column=1)
+		exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-14.0]
+		exposSelection = tk.OptionMenu(root,exposure,*exposModes)
+		exposSelection.grid(row=6,column=2)
 
-	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),exposure.get(),root))
-	confirm.grid(row=5,column=2)
+	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),flash.get(),relative.get(),disparity.get(),exposure.get(),root))
+	confirm.grid(row=7,column=2)
 	
 	root.mainloop()
 
-def updateSettings(master,mode,rectification,flash,exposure,menu):
+def updateSettings(master,mode,rectification,flash,relative,disp,exposure,menu):
 	master['settings']['mode'] = mode
 	master['settings']['rectification'] = rectification
 	master['settings']['flash'] = flash
+	master['settings']['relative'] = relative
+	master['settings']['disparity'] = int(disp)
 	master['settings']['exposure'] = float(exposure)
 	if(programMode == 1):
 		cs.adjustExposure(master['settings']['exposure'])
+	cs.adjustNumDisp(master['settings']['disparity'])
 	menu.destroy()
 
 # Test Driver
@@ -255,6 +275,8 @@ if __name__ == '__main__':
 			'rectification': 'Off',
 			'flash': 'Off',
 			'save': 'Off',
+			'relative':'Off',
+			'disparity':64,
 			'exposure':-6.0
 		}
 	}
@@ -273,6 +295,7 @@ if __name__ == '__main__':
 	setupPreview(root,master,lbl)
 	imagePreview(root,master,lbl)
 	cs.adjustExposure(master['settings']['exposure'])
+	cs.adjustNumDisp(master['settings']['disparity'])
 	root.mainloop()
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		GPIO.cleanup()

@@ -326,7 +326,7 @@ def disparityToDepthADAS(disparity):
 def checkCams():
     global leftCam
     global rightCam 
-    return leftCam != None and rightCam != None
+    return leftCam.isOpened() and rightCam.isOpened()
 
 def adjustExposure(exposure):
     leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
@@ -360,8 +360,9 @@ stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # Parameters for the Simulation
 counter = 0
-depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
-interval = 6
+# depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+depths = [12,15,18,21,24,27,30,33,36]
+interval = 10
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
@@ -384,7 +385,7 @@ def rectifyLeft(leftFrame):
 def rectifyRight(rightFrame):
     return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
-def processCapture(leftFrame,rightFrame,algor,downscale):
+def processCapture(leftFrame,rightFrame,algor,downscale,relative):
     # leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
     # rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
     #clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
@@ -436,7 +437,10 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         disparity = cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F)
         #disparity = cv.cvtColor(cv.applyColorMap(cv.equalizeHist(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
         #disparity = cv.cvtColor(cv.applyColorMap(clahe.apply(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
-        disparity = cv.cvtColor(cv.applyColorMap(np.uint8(255*disparity),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+        if(relative):
+            disparity = cv.cvtColor(cv.applyColorMap(cv.equalizeHist(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+        else:
+            disparity = cv.cvtColor(cv.applyColorMap(np.uint8(255*disparity),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
     else: 
          disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
@@ -468,6 +472,8 @@ if(checkCams()):
     # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
     # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
 else:
+    leftCam.release()
+    rightCam.release()
     print(f'No Webcams')
 
 
