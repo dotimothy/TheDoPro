@@ -87,7 +87,7 @@ if __name__ == '__main__':
 	if(sys.platform == 'linux'):
 		GPIO.setwarnings(False)
 		for led in leds:
-			GPIO.setup(led['pin'],GPIO.OUT)
+			GPIO.setup(leds[led]['pin'],GPIO.OUT)
 	while True:
 		# Images
 		left = cs.readLeft(programMode)
