@@ -86,6 +86,7 @@ if __name__ == '__main__':
 	}
 	if(sys.platform == 'linux'):
 		GPIO.setwarnings(False)
+		GPIO.setmode(GPIO.BOARD)
 		for led in leds:
 			GPIO.setup(leds[led]['pin'],GPIO.OUT)
 	while True:
