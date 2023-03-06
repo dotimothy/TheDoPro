@@ -333,13 +333,13 @@ def adjustExposure(exposure):
     rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=15)
+stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def adjustNumDisp(num):
     global stereoBM
     global stereoSGBM
-    stereoBM = cv.StereoBM_create(numDisparities=num,blockSize=15)
+    stereoBM = cv.StereoBM_create(numDisparities=num,blockSize=9)
     stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=num, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def correctPosition():
@@ -408,7 +408,7 @@ def processCapture(leftFrame,rightFrame,algor,downscale,relative,cmap):
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV Block Matching
         disparity = stereoBM.compute(leftFrameGray,rightFrameGray)     
-        cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=20,maxDiff=2)
+        cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=100,maxDiff=1)
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
     elif(algor == 1): #OpenCV Semi-Global Block Matching
         disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray) 

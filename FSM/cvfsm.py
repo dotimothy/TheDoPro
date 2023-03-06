@@ -40,22 +40,6 @@ def printButtonState(master):
 		print(f"{button}: {master['buttons'][button]['state']}")
 	print()
 
-def checkPower(master):
-	powerCounter = 3250
-	while(powerCounter > 0):
-		sleep(0.001)
-		if master['buttons']['power']['state']:
-			if(powerCounter % 1000 == 0):
-				print(int(powerCounter/1000))
-			powerCounter = powerCounter - 1
-			updateButtonState(master)
-		else:
-			return
-	print("Turning Off")
-	system('clear')
-	GPIO.cleanup()
-	#os.system('sudo shutdown -h now')
-	exit()
 
 # FSM Functions
 
@@ -145,15 +129,15 @@ def setupPreview(root,master,lbl):
 			widget.destroy()
 	lbl.grid(row=1,column=1)
 	if(master['settings']['state'] != 'Capture'):
-		tk.Button(root,text="Change Camera",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1)
+		tk.Button(root,text="Change Camera",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1,padx=10,pady=10)
 	else:
-		tk.Button(root,text="Revert",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1)
-	tk.Button(root,text="Save Image",font=("Courier",28),command=lambda:turnOnSave(master)).grid(row=1,column=2)
-	tk.Button(root,text="Gallery",font=("Courier",28),command=lambda:openGallery('results')).grid(row=1,column=3)
-	tk.Button(root,text="Capture",font=("Courier",28),command=lambda:updateState(master,'Capture')).grid(row=2,column=2)
-	tk.Button(root,text="Settings",font=("Courier",28),command=lambda:configSettings(master)).grid(row=2,column=3)
+		tk.Button(root,text="Revert",font=("Courier",28),command=lambda:changeCamera(master)).grid(row=2,column=1,padx=10,pady=10)
+	tk.Button(root,text="Save Image",font=("Courier",28),command=lambda:turnOnSave(master)).grid(row=1,column=2,padx=10,pady=10)
+	tk.Button(root,text="Gallery",font=("Courier",28),command=lambda:openGallery('results')).grid(row=1,column=3,padx=10,pady=10)
+	tk.Button(root,text="Capture",font=("Courier",28),command=lambda:updateState(master,'Capture')).grid(row=2,column=2,padx=10,pady=10)
+	tk.Button(root,text="Settings",font=("Courier",28),command=lambda:configSettings(master)).grid(row=2,column=3,padx=10,pady=10)
 	if(programMode == 1):
-		tk.Button(root,text="Correct",font=("Courier",28),command=lambda:cs.correctPosition()).grid(row=3,column=3)
+		tk.Button(root,text="Correct",font=("Courier",28),command=lambda:cs.correctPosition()).grid(row=3,column=3,padx=10,pady=10)
 
 def updateState(master,state):
 	master['settings']['state'] = state

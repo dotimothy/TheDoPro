@@ -78,13 +78,14 @@ if __name__ == '__main__':
 	counter = 0
 	programMode = 1
 	cs.adjustNumDisp(32)
-
+	cs.adjustExposure(-4.0)
 	# pins are physical	
 	leds = {
 		'flash': {'pin': 15},
 		'capture':{'pin': 7}
 	}
 	if(sys.platform == 'linux'):
+		GPIO.setwarnings(False)
 		for led in leds:
 			GPIO.setup(led['pin'],GPIO.OUT)
 	while True:
