@@ -76,7 +76,7 @@ if __name__ == '__main__':
 	depths = [12,15,18,21,24,27,30,33,36]
 	interval = 4
 	counter = 0
-	programMode = 1
+	programMode = 0
 	cs.adjustNumDisp(32)
 	cs.adjustExposure(-4.0)
 	# pins are physical	

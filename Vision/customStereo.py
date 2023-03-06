@@ -13,8 +13,8 @@ from multiprocessing import Process, Queue
 from os import cpu_count
 import sys
 from math import *
-if(sys.platform == 'linux'):
-    import v4l2capture
+# if(sys.platform == 'linux'):
+#     import v4l2capture
 
 
 # Disparity Computation Functions
