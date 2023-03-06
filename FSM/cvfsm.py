@@ -61,6 +61,9 @@ def checkPower(master):
 
 
 def imagePreview(root,master,lbl):
+	im = []
+	image_L = []
+	image_R = []
 	if(master['lastState'] != master['settings']['state']):
 		setupPreview(root,master,lbl)
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
@@ -123,6 +126,9 @@ def imagePreview(root,master,lbl):
 		if(not os.path.exists('./results')):
 			os.mkdir('./results')
 		saveImage(im,'./results')
+		if(master['settings']['state'] == 'Capture'):
+			saveImage(image_L,'./results')
+			saveImage(image_R,'./results')
 		master['settings']['save'] = 'Off'
 	im = cv.resize(im,(640,480))
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
@@ -173,6 +179,10 @@ def openGallery(directory):
 def saveImage(im,outputDir):
 	current = localtime()
 	outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.jpg'
+	dup = 1
+	while(os.path.exists(outputPath)):
+		outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}_{str(dup)}.jpg'
+		dup = dup + 1
 	cv.imwrite(outputPath,cv.cvtColor(im,cv.COLOR_RGB2BGR))
 	root = tk.Tk()
 	root.title('Saving')
@@ -196,6 +206,8 @@ def configSettings(master):
 	mode.set(master['settings']['mode'])
 	modeSelection = tk.OptionMenu(root,mode,*modes)
 	modeSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	modeSelections = root.nametowidget(modeSelection.menuname)
+	modeSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
 	modeSelection.grid(row=1,column=2)
 
 	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",28))
@@ -205,25 +217,32 @@ def configSettings(master):
 	rectification.set(master['settings']['rectification'])
 	rectSelection = tk.OptionMenu(root,rectification,*rectifications)
 	rectSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	rectSelections = root.nametowidget(rectSelection.menuname)
+	rectSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
 	rectSelection.grid(row=2,column=2)
 
-	disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",28))
-	disLabel.grid(row=3,column=1)
-	disModes = [16,32,64,128,256]
-	disparity = tk.StringVar(root)
-	disparity.set(master['settings']['disparity'])
-	disSelection = tk.OptionMenu(root,disparity,*disModes)
-	disSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
-	disSelection.grid(row=3,column=2)
-
 	cmapLabel = tk.Label(root,text="Color Map: ",font=("Courier",28))
-	cmapLabel.grid(row=4,column=1)
+	cmapLabel.grid(row=3,column=1)
 	cmapModes = ['Jet','Gray','Bone','Rainbow','HSV','Viridis']
 	cmap = tk.StringVar(root)
 	cmap.set(master['settings']['colormap'].capitalize())
 	cmapSelection = tk.OptionMenu(root,cmap,*cmapModes)
 	cmapSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
-	cmapSelection.grid(row=4,column=2)
+	cmapSelections = root.nametowidget(cmapSelection.menuname)
+	cmapSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+	cmapSelection.grid(row=3,column=2)
+
+	disparity = tk.StringVar(root)
+	disparity.set(master['settings']['disparity'])
+	if(master['settings']['mode'] == 'OpenCV_SGBM' or master['settings']['mode'] == 'OpenCV_BM'):
+		disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",28))
+		disLabel.grid(row=4,column=1)
+		disModes = [16,32,64,128,256]
+		disSelection = tk.OptionMenu(root,disparity,*disModes)
+		disSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		disSelections = root.nametowidget(disSelection.menuname)
+		disSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+		disSelection.grid(row=4,column=2)
 
 	relative = tk.StringVar(root)
 	relative.set(master['settings']['relative'])
@@ -233,16 +252,20 @@ def configSettings(master):
 		reModes = ['On','Off']
 		reSelection = tk.OptionMenu(root,relative,*reModes)
 		reSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		reSelections = root.nametowidget(reSelection.menuname)
+		reSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
 		reSelection.grid(row=5,column=2)
 
 	flash = tk.StringVar(root)
 	flash.set(master['settings']['flash'])
-	if(programMode == 1):
+	if(programMode == 1 and sys.platform == 'linux'):
 		flashLabel = tk.Label(root,text="Flash: ",font=("Courier",28))
 		flashLabel.grid(row=6,column=1)
 		flashModes = ['On','Off']
 		flashSelection = tk.OptionMenu(root,flash,*flashModes)
 		flashSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		flashSelections = root.nametowidget(flashSelection.menuname)
+		flashSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
 		flashSelection.grid(row=6,column=2)
 
 	exposure = tk.StringVar(root)
@@ -253,14 +276,16 @@ def configSettings(master):
 		exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-14.0]
 		exposSelection = tk.OptionMenu(root,exposure,*exposModes)
 		exposSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		exposSelections = root.nametowidget(exposSelection.menuname)
+		exposSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
 		exposSelection.grid(row=7,column=2)
 
-	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),disparity.get(),cmap.get(),relative.get(),flash.get(),exposure.get(),root))
+	confirm = tk.Button(root,text="Update Settings",font=("Courier",28),command=lambda:updateSettings(master,mode.get(),rectification.get(),cmap.get(),disparity.get(),relative.get(),flash.get(),exposure.get(),root))
 	confirm.grid(row=8,column=2)
 	
 	root.mainloop()
 
-def updateSettings(master,mode,rectification,disp,cmap,relative,flash,exposure,menu):
+def updateSettings(master,mode,rectification,cmap,disp,relative,flash,exposure,menu):
 	master['settings']['mode'] = mode
 	master['settings']['rectification'] = rectification
 	master['settings']['flash'] = flash
