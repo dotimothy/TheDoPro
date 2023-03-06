@@ -5,6 +5,9 @@ import cv2 as cv
 import numpy as np
 import colorsys
 from time import sleep
+import sys
+if(sys.platform == 'linux'):
+	import RPi.GPIO as GPIO
 
 # Calculates Density of Non-Zero Pixels
 def calculateDensity(image):
@@ -73,11 +76,21 @@ if __name__ == '__main__':
 	depths = [12,15,18,21,24,27,30,33,36]
 	interval = 4
 	counter = 0
-	cs.adjustNumDisp(64)
+	programMode = 1
+	cs.adjustNumDisp(32)
+
+	# pins are physical	
+	leds = {
+		'flash': {'pin': 15},
+		'capture':{'pin': 7}
+	}
+	if(sys.platform == 'linux'):
+		for led in leds:
+			GPIO.setup(led['pin'],GPIO.OUT)
 	while True:
 		# Images
-		left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
-		right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
+		left = cs.readLeft(programMode)
+		right = cs.readRight(programMode)
 		# Compute using OpenCV SGBM HeatMap
 		disparityMap = cv.cvtColor(cs.processCapture(left,right,1,1,False,'jet'),cv.COLOR_BGR2RGB)
 		#disparity = cv.imread('result2.jpg')
@@ -85,17 +98,21 @@ if __name__ == '__main__':
 		numPixels = disparityMap.shape[0]*disparityMap.shape[1]
 		#cv.imwrite('cropped.png',disparityMap)
 		mapClusters, mapCenters, mapCounts = ADASMapKMeans(disparityMap,3)
-		cv.imshow('cluster',mapClusters)
 		mapClassifications = []
 		for i, center in enumerate(mapCenters):
 			mapClassifications.append(classifyCenter(center[2],center[1],center[0],mapCounts[i],numPixels))
 		detect = (True in (classification == 1 for classification in mapClassifications)) 
-		print(f'Detected: {detect}')
-		print(mapClassifications)
-		print(100*mapCounts/numPixels)
-		print()
+		if(sys.platform == 'win32'):
+			cv.imshow('cluster',mapClusters)
+			print(f'Detected: {detect}')
+			print(mapClassifications)
+			print(100*mapCounts/numPixels)
+			print()
+		elif(sys.platform == 'linux'):
+				for led in leds: #Turns on Light if Detected.
+					GPIO.output(leds[led]['pin'],1 if detect else 0)
+
 		counter = counter  + 1
-		prev = mapClassifications
 		cv.waitKey(1)
 		
 	# close = extractIntensity(clusters,0)

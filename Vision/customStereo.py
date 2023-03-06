@@ -370,6 +370,8 @@ def readLeft(mode):
         return cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
+    elif(mode == 2): #Piano
+        return cv.cvtColor(cv.imread(f'../Images/left_piano.png',1),cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
@@ -378,6 +380,8 @@ def readRight(mode):
         return cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
+    elif(mode == 2):
+        return cv.cvtColor(cv.imread(f'../Images/right_piano.png',1),cv.COLOR_BGR2RGB)
 
 def rectifyLeft(leftFrame):
     return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
