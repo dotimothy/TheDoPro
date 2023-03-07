@@ -21,8 +21,6 @@ if(programMode and not(cs.checkCams())):
 
 # GPIO Functions 
 
-freq = 0.1
-
 def setupGPIO(master):
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)
@@ -60,7 +58,7 @@ def imagePreview(root,master,lbl):
 			updateState(master,'Capture')
 		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
 			configSettings(master)
-	root.title(f'TheDoPro ({master["settings"]["state"]})')
+	root.title(f'TheDoPro Visualization Mode (State: {master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
 		if(master['settings']['rectification'] == 'On'):
@@ -82,7 +80,7 @@ def imagePreview(root,master,lbl):
 				GPIO.output(master['leds']['flash']['pin'],1)
 			else: 
 				GPIO.output(master['leds']['flash']['pin'],0)
-		root.title(f'TheDoPro ({master["settings"]["state"]}: {master["settings"]["mode"]})')
+		root.title(f'TheDoPro Visualization Mode (State: {master["settings"]["state"]}: {master["settings"]["mode"]})')
 		config = {'OpenCV_BM': {
 			'algor':0,
 			'downscale':1
@@ -177,7 +175,7 @@ def configSettings(master):
 	root = tk.Tk()
 	if(sys.platform == 'win32'): 
 		root.iconbitmap('../Images/favicon.ico')
-	root.title('Settings')
+	root.title('TheDoPro Visualization Mode Settings')
 	root.geometry('960x540')
 
 	title = tk.Label(root,text='Settings',font=("Courier",30))

@@ -18,7 +18,14 @@ def triggerProgram(program,root):
 	root.destroy()
 	os.system(f'python {programs[program]}')	
 
-def setupPreview(root,lbl):
+def shutdown():
+	if(sys.platform == 'linux'):
+		os.system('sudo shutdown now')
+	else:
+		os.system('cls')
+	exit()
+
+def setupPreview(root,lbl,exit):
 	root.title('TheDoPro Program Selector')
 	if(sys.platform == 'win32'):
 		root.iconbitmap('../Images/favicon.ico')
@@ -28,12 +35,13 @@ def setupPreview(root,lbl):
 	lbl.configure(image=imTk)
 	tk.Button(root,text="Visualziation",font=("Courier",28),command=lambda:triggerProgram('vis',root)).grid(row=2,column=1,padx=10,pady=10)
 	tk.Button(root,text="ADAS-Detection",font=("Courier",28),command=lambda:triggerProgram('ADAS',root)).grid(row=3,column=1,padx=10,pady=10)
-	tk.Button(root,text="3D-Scanning",font=("Courier",28),command=lambda:triggerProgram('3D',root)).grid(row=4,column=1,padx=10,pady=10)
-
+	tk.Button(root,text="3D-Scanning",font=("Courier",28),command=lambda:triggerProgram('3D',root)).grid(row=2,column=2,padx=10,pady=10)
+	tk.Button(root,text="Shutdown",font=("Courier",28),command=lambda:shutdown()).grid(row=3,column=2,padx=10,pady=10)
 
 
 if __name__ == '__main__':
-	root = tk.Tk()
-	lbl = tk.Label(root)
-	setupPreview(root,lbl)
-	root.mainloop()
+	while True: 
+		root = tk.Tk()
+		lbl = tk.Label(root)
+		setupPreview(root,lbl,exit)
+		root.mainloop()
