@@ -45,7 +45,7 @@ def createSTL(inputPCPath,outputSTLPath):
 	# Convert to STL file
 	o3d.io.write_triangle_mesh(outputSTLPath, mesh)
 
-programMode = 1
+programMode = 2
 if(programMode and not(cs.checkCams())):
 	programMode = 2
 

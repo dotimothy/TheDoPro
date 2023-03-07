@@ -33,7 +33,7 @@ def setupPreview(root,lbl,exit):
 	imTk = ImageTk.PhotoImage(image=Image.open('../Images/TheDoPro.jpg'))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
-	tk.Button(root,text="Visualziation",font=("Courier",28),command=lambda:triggerProgram('vis',root)).grid(row=2,column=1,padx=10,pady=10)
+	tk.Button(root,text="Visualiziation",font=("Courier",28),command=lambda:triggerProgram('vis',root)).grid(row=2,column=1,padx=10,pady=10)
 	tk.Button(root,text="ADAS-Detection",font=("Courier",28),command=lambda:triggerProgram('ADAS',root)).grid(row=3,column=1,padx=10,pady=10)
 	tk.Button(root,text="3D-Scanning",font=("Courier",28),command=lambda:triggerProgram('3D',root)).grid(row=2,column=2,padx=10,pady=10)
 	tk.Button(root,text="Shutdown",font=("Courier",28),command=lambda:shutdown()).grid(row=3,column=2,padx=10,pady=10)

@@ -14,7 +14,7 @@ if(sys.platform == 'linux'):
 	import RPi.GPIO as GPIO
 import customStereo as cs 
 
-programMode = 1
+programMode = 0
 if(programMode and not(cs.checkCams())):
 	programMode = 0
 
