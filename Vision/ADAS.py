@@ -55,7 +55,7 @@ def extractIntensity(image,intensity):
 #Classify K-Means center as being a cluster that's either close,far,or in-between
 #Return: 0 - far, 0.5 - middle, 1 - close,
 def classifyCenter(r,g,b,clusterCount,numPixels):
-	if(r >= 1.6*g and r >= 1.6*b and clusterCount >= 0.35*numPixels):
+	if(abs(255-r) < 100 and r >= 1.3*b and clusterCount >= 0.25*numPixels):
 		return 1
 	elif(b >= g and b >= r):
 		return 0
