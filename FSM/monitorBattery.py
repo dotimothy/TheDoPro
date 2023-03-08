@@ -34,7 +34,7 @@ while power:
     ts = datetime.datetime.now()
     # Print the ADC values.
     print(f'{ts}: Raw: {raw}, Voltage: {voltage} V')
-    csvFile = open('voltage.csv','a')
+    csvFile = open(fileName,'a')
     writer = csv.writer(csvFile)
     writer.writerow([str(ts),str(raw),str(voltage)])
     csvFile.close()
