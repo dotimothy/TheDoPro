@@ -162,10 +162,10 @@ def openGallery(directory):
 
 def saveImage(im,outputDir):
 	current = localtime()
-	outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.jpg'
+	outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}_{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.jpg'
 	dup = 1
 	while(os.path.exists(outputPath)):
-		outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}_{str(dup)}.jpg'
+		outputPath = f'{outputDir}/{current.tm_mon}{current.tm_mday}_{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}_{str(dup)}.jpg'
 		dup = dup + 1
 	cv.imwrite(outputPath,cv.cvtColor(im,cv.COLOR_RGB2BGR))
 	root = tk.Tk()

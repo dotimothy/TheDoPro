@@ -23,7 +23,7 @@ supply = 5.18
 print('Monitoring Voltage of the Battery using MCP3008')
 power = True
 current = localtime()
-fileName = f'voltage_{current.tm_mon}{current.tm_mday}{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.csv'
+fileName = f'voltage_{current.tm_mon}{current.tm_mday}_{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.csv'
 csvFile = open(fileName,'w')
 writer = csv.writer(csvFile)
 writer.writerow(['Timestamp','Raw','Voltage'])
