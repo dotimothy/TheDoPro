@@ -11,7 +11,7 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 2
+programMode = 3
 
 
 import customStereo as cs 
@@ -43,6 +43,8 @@ def printButtonState(master):
 
 
 def imagePreview(root,master,lbl):
+	if(master['settings']['save'] == 'On'):
+		sleep(3)
 	im = []
 	image_L = []
 	image_R = []

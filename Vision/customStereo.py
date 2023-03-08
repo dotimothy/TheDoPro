@@ -376,6 +376,8 @@ def readLeft(mode):
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
     elif(mode == 2): #Cup
         return cv.cvtColor(cv.imread(f'../Images/cup_L.jpg',1),cv.COLOR_BGR2RGB)
+    elif(mode == 3): #Daniel
+        return cv.cvtColor(cv.imread(f'../Images/daniel2_L.jpg',1),cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
@@ -386,6 +388,8 @@ def readRight(mode):
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
     elif(mode == 2): #Cup
         return cv.cvtColor(cv.imread(f'../Images/cup_R.jpg',1),cv.COLOR_BGR2RGB)
+    elif(mode == 3): #Daniel
+        return cv.cvtColor(cv.imread(f'../Images/daniel2_R.jpg',1),cv.COLOR_BGR2RGB)
 
 def rectifyLeft(leftFrame):
     return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
@@ -517,16 +521,22 @@ if __name__ == "__main__":
     # cv.imwrite('disp.jpg',dispMap)
 
 
-    depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
-    adjustNumDisp(64)
-    for depth in depths: 
-        left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
-        right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
-        disparitySGBM = stereoSGBM.compute(left,right)
-        depthSGBM = disparityToDepthScanning(disparitySGBM)[:][64:disparitySGBM.shape[1]]
-        # cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
-        np.savetxt(f'../Images/Pillow/D_{depth}.csv',depthSGBM,delimiter=",")
-
+    # depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+    disp = 256
+    adjustNumDisp(disp)
+    adjustExposure(-5)
+    # for depth in depths: 
+    #     left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
+    #     right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
+    left = cv.cvtColor(readLeft(1),cv.COLOR_BGR2GRAY)
+    right = cv.cvtColor(readRight(1),cv.COLOR_BGR2GRAY)
+    cv.imwrite('left.jpg',left)
+    disparitySGBM = stereoSGBM.compute(left,right)
+    depthSGBM = disparityToDepthScanning(rawDispToPix(disparitySGBM))[:, disp:disparitySGBM.shape[1]]
+    # cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
+    np.savetxt(f'depth.csv',depthSGBM,delimiter=",")
+    print(depthSGBM[250, 344-disp])
+    #print(left[225][328])
     # image_L = readLeft(1)
     # image_R = readRight(1)
     # start = time.time()
