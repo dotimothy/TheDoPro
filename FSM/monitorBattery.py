@@ -14,10 +14,10 @@ CLK  = 21
 MISO = 19
 MOSI = 20
 CS   = 16
-sleep = 5
+sleep = 3
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
-GPIO.setup(3,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-threshold = 3.1
+GPIO.setup(sleep,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+threshold = 0
 supply = 5.18
 
 print('Monitoring Voltage of the Battery using MCP3008')
@@ -38,11 +38,11 @@ while power:
     writer = csv.writer(csvFile)
     writer.writerow([str(ts),str(raw),str(voltage)])
     csvFile.close()
-    if(voltage < threshold):
+    if(voltage < threshold or not(GPIO.input(sleep)) ):
         power = False
         messagebox.showwarning("Shut Down","Sleeping")
-        time.sleep(30)
-        os.system('sudo shutdown -h now')
+        #sleep(30)
+        #os.system('sudo shutdown -h now')
     
     # Pause
     time.sleep(60)
