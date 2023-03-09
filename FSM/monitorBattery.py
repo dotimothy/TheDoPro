@@ -17,6 +17,7 @@ CS   = 16
 powerBCM = 3
 powerBoard = 5
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(powerBCM,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 threshold = 0
 supply = 5.18
