@@ -14,9 +14,10 @@ CLK  = 21
 MISO = 19
 MOSI = 20
 CS   = 16
-power = 3
+powerBCM = 3
+powerBoard = 5
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
-GPIO.setup(power,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+GPIO.setup(powerBCM,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 threshold = 0
 supply = 5.18
 
@@ -38,7 +39,7 @@ while power:
     writer = csv.writer(csvFile)
     writer.writerow([str(ts),str(raw),str(voltage)])
     csvFile.close()
-    if(voltage < threshold or not(GPIO.input(power)) ):
+    if(voltage < threshold or not(GPIO.input(powerBoard)) ):
         power = False
         messagebox.showwarning("Shut Down","Sleeping")
         #sleep(30)
