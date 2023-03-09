@@ -45,4 +45,4 @@ while power:
         #os.system('sudo shutdown -h now')
     
     # Pause
-    time.sleep(60)
+    sleep(60)
