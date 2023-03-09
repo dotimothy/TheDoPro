@@ -15,9 +15,8 @@ MISO = 19
 MOSI = 20
 CS   = 16
 sleep = 5
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(5,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+GPIO.setup(3,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 threshold = 3.1
 supply = 5.18
 
