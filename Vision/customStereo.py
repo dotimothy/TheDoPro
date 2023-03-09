@@ -13,8 +13,8 @@ from multiprocessing import Process, Queue
 from os import cpu_count
 import sys
 from math import *
-if(sys.platform == 'linux'):
-    import v4l2capture
+# if(sys.platform == 'linux'):
+#     import v4l2capture
 
 
 # Disparity Computation Functions
@@ -316,30 +316,34 @@ def rawDispToPix(raw):
     return raw.astype(np.float32)/16
 
 def disparityToDepthScanning(disparity):
-    return 613.33*np.power(disparity.clip(min=0.00001),-1.001)
+    depth = 613.33*np.power(disparity.clip(min=0.00001),-1.001)
+    depth[depth == 613.33*np.power(0.00001,-1.001)] = 0
+    return depth 
 
 def disparityToDepthADAS(disparity):
-    return 264.2*np.power(disparity.clip(min=0.00001),-0.789)
+    depth = 264.2*np.power(disparity.clip(min=0.00001),-0.789)
+    depth[depth == 264.2*np.power(0.00001,-0.789)] = 0
+    return depth
 
 # Camera Configurations
 
 def checkCams():
     global leftCam
     global rightCam 
-    return leftCam != None and rightCam != None
+    return leftCam.isOpened() and rightCam.isOpened()
 
 def adjustExposure(exposure):
     leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
     rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
 
 # OpenCV Stereo Objects
-stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=15)
+stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def adjustNumDisp(num):
     global stereoBM
     global stereoSGBM
-    stereoBM = cv.StereoBM_create(numDisparities=num,blockSize=15)
+    stereoBM = cv.StereoBM_create(numDisparities=num,blockSize=9)
     stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=num, blockSize=7, P1=8*7*7, P2=32*7*7, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
 def correctPosition():
@@ -360,8 +364,9 @@ stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 
 # Parameters for the Simulation
 counter = 0
-depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
-interval = 6
+# depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
+depths = [12,15,18,21,24,27,30,33,36]
+interval = 10
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
@@ -369,6 +374,10 @@ def readLeft(mode):
         return cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
+    elif(mode == 2): #Cup
+        return cv.cvtColor(cv.imread(f'../Images/cup_L.jpg',1),cv.COLOR_BGR2RGB)
+    elif(mode == 3): #Daniel
+        return cv.cvtColor(cv.imread(f'../Images/daniel2_L.jpg',1),cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
@@ -377,6 +386,10 @@ def readRight(mode):
         return cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
         return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
+    elif(mode == 2): #Cup
+        return cv.cvtColor(cv.imread(f'../Images/cup_R.jpg',1),cv.COLOR_BGR2RGB)
+    elif(mode == 3): #Daniel
+        return cv.cvtColor(cv.imread(f'../Images/daniel2_R.jpg',1),cv.COLOR_BGR2RGB)
 
 def rectifyLeft(leftFrame):
     return cv.remap(leftFrame,stereoMapL_x,stereoMapL_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
@@ -384,7 +397,7 @@ def rectifyLeft(leftFrame):
 def rectifyRight(rightFrame):
     return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
-def processCapture(leftFrame,rightFrame,algor,downscale):
+def processCapture(leftFrame,rightFrame,algor,downscale,relative,cmap):
     # leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
     # rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
     #clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
@@ -403,13 +416,13 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
         rightFrameGray = cv.resize(rightFrameGray,(int(rightFrameGray.shape[1]/downscale),int(rightFrameGray.shape[0]/downscale)),interpolation=cv.INTER_CUBIC)
     if(algor == 0): #OpenCV Block Matching
         disparity = stereoBM.compute(leftFrameGray,rightFrameGray)     
-        cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=20,maxDiff=2)
+        cv.filterSpeckles(disparity,newVal=0,maxSpeckleSize=100,maxDiff=1)
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalize 
     elif(algor == 1): #OpenCV Semi-Global Block Matching
         disparity = stereoSGBM.compute(leftFrameGray,rightFrameGray) 
         #disparity = ((disparity+16)/4 - 1).astype(np.uint8) #Normalzie
     elif(algor == 2): #Cost Block Matching
-        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 5, 5, 16)
+        result = vec_cost_block_matching(leftFrameGray, rightFrameGray, 5, 5, 32)
         disparity = result[0][:,:,0]
     elif(algor == 3): #Multiblock
         disparity = multiblock(leftFrameGray, rightFrameGray, 9, 9, 5, 5, 7, 7, 16)
@@ -433,12 +446,30 @@ def processCapture(leftFrame,rightFrame,algor,downscale):
     if(downscale != 1):
         disparity = cv.resize(disparity,(disparity.shape[1]*downscale,disparity.shape[0]*downscale),interpolation=cv.INTER_CUBIC)
     if(algor < 2):
-        disparity = cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F)
+        disparity = np.uint8(255*cv.normalize(disparity,disparity,0,1,cv.NORM_MINMAX,cv.CV_32F))
         #disparity = cv.cvtColor(cv.applyColorMap(cv.equalizeHist(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
         #disparity = cv.cvtColor(cv.applyColorMap(clahe.apply(np.uint8(255*disparity)),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
-        disparity = cv.cvtColor(cv.applyColorMap(np.uint8(255*disparity),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+        if(relative):
+            disparity = cv.equalizeHist(disparity)
+        cmaps = {
+            'jet':cv.COLORMAP_JET,
+            'bone':cv.COLORMAP_BONE,
+            'rainbow':cv.COLORMAP_RAINBOW,
+            'hsv':cv.COLORMAP_HSV,
+            'viridis':cv.COLORMAP_VIRIDIS
+        }
+        if(cmap != 'gray'): #gray is just raw normalization
+            disparity = cv.cvtColor(cv.applyColorMap(disparity,cmaps[cmap]),cv.COLOR_RGB2BGR)
     else: 
-         disparity = cv.cvtColor(np.uint8(cm.jet(disparity)*255),cv.COLOR_RGBA2BGR)
+        cmaps = {
+            'jet':cm.jet,
+            'gray':cm.gray,
+            'bone':cm.bone,
+            'rainbow':cm.rainbow,
+            'hsv':cm.hsv,
+            'viridis':cm.viridis
+        }
+        disparity = cv.cvtColor(np.uint8(cmaps[cmap](disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
 
 # Run Code Below If Imported
@@ -468,39 +499,44 @@ if(checkCams()):
     # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
     # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
 else:
+    leftCam.release()
+    rightCam.release()
     print(f'No Webcams')
 
 
 
 if __name__ == "__main__":
 
-    adjustNumDisp(64)
-    left = readLeft(0)
-    right = readRight(0)
-    disparitySGBM = stereoSGBM.compute(left,right)
-    depthSGBM = disparityToDepthADAS(rawDispToPix(disparitySGBM))
-    depthSGBM = cv.normalize(depthSGBM,None,0,1,cv.NORM_MINMAX,cv.CV_32F)
-    depthMap = cv.cvtColor(cv.applyColorMap(np.uint8(255*depthSGBM),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
-    cv.imwrite('depth.jpg',depthMap)
-    dispMap = processCapture(left,right,1,1)
-    cv.imwrite('disp.jpg',dispMap)
+    # adjustNumDisp(256)
+    # left = cv.cvtColor(cv.imread('../Images/daniel_L.jpg'),cv.COLOR_BGR2GRAY)
+    # right = cv.cvtColor(cv.imread('../Images/daniel_R.jpg'),cv.COLOR_BGR2GRAY)
+    # disparitySGBM = stereoSGBM.compute(left,right)
+    # depthSGBM = disparityToDepthScanning(disparitySGBM)
+    # depthSGBM = depthSGBM[:,256:depthSGBM.shape[1]]
+    # np.savetxt('D.csv',depthSGBM,delimiter=",")
+    # depthSGBM = cv.normalize(depthSGBM,None,0,1,cv.NORM_MINMAX,cv.CV_32F)
+    # depthMap = cv.cvtColor(cv.applyColorMap(np.uint8(255*depthSGBM),cv.COLORMAP_JET),cv.COLOR_RGB2BGR)
+    # cv.imwrite('depth.jpg',depthMap)
+    # dispMap = processCapture(left,right,1,1)
+    # cv.imwrite('disp.jpg',dispMap)
 
 
     # depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
-    # adjustNumDisp(64)
+    disp = 256
+    adjustNumDisp(disp)
+    adjustExposure(-5)
     # for depth in depths: 
     #     left = cv.cvtColor(cv.imread(f'../Images/Pillow/L_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
     #     right = cv.cvtColor(cv.imread(f'../Images/Pillow/R_{depth}.jpg',1),cv.COLOR_BGR2GRAY)
-    #     disparityBM = stereoBM.compute(left,right)
-    #     disparitySGBM = stereoSGBM.compute(left,right)
-    #     BMMap = cv.cvtColor(processCapture(left,right,0,1),cv.COLOR_BGR2RGB)
-    #     SGBMMap = cv.cvtColor(processCapture(left,right,1,1),cv.COLOR_BGR2RGB)
-    #     disparitySGBM = disparitySGBM[:,64:disparitySGBM.shape[1]].astype(np.float32)/16
-    #     cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
-    #     cv.imwrite(f'../Images/Pillow/D_SGBM_{depth}.jpg',SGBMMap)
-    #     np.savetxt(f'../Images/Pillow/BM_{depth}.csv',disparityBM,delimiter=",")
-    #     np.savetxt(f'../Images/Pillow/SGBM_{depth}.csv',disparitySGBM,delimiter=",")
-
+    left = cv.cvtColor(readLeft(1),cv.COLOR_BGR2GRAY)
+    right = cv.cvtColor(readRight(1),cv.COLOR_BGR2GRAY)
+    cv.imwrite('left.jpg',left)
+    disparitySGBM = stereoSGBM.compute(left,right)
+    depthSGBM = disparityToDepthScanning(rawDispToPix(disparitySGBM))[:, disp:disparitySGBM.shape[1]]
+    # cv.imwrite(f'../Images/Pillow/D_BM_{depth}.jpg',BMMap)
+    np.savetxt(f'depth.csv',depthSGBM,delimiter=",")
+    print(depthSGBM[250, 344-disp])
+    #print(left[225][328])
     # image_L = readLeft(1)
     # image_R = readRight(1)
     # start = time.time()
