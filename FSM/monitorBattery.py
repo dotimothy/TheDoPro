@@ -40,7 +40,7 @@ while power:
     writer = csv.writer(csvFile)
     writer.writerow([str(ts),str(raw),str(voltage)])
     csvFile.close()
-    if(voltage < threshold or not(GPIO.input(powerBoard)) ):
+    if(voltage < threshold or not(GPIO.input(powerBCM)) ):
         power = False
         messagebox.showwarning("Shut Down","Sleeping")
         #sleep(30)
