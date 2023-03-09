@@ -17,15 +17,15 @@ CS   = 16
 powerBCM = 3
 powerBoard = 5
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(powerBCM,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(powerBCM,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 threshold = 0
 supply = 5.18
 
 print('Monitoring Voltage of the Battery using MCP3008')
 power = True
 current = localtime()
-fileName = f'voltage_{current.tm_mon}{current.tm_mday}_{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.csv'
+fileName = f'voltage_{current.tm_mon}_{current.tm_mday}_{current.tm_year}_{current.tm_hour}_{current.tm_min}_{current.tm_sec}.csv'
 csvFile = open(fileName,'w')
 writer = csv.writer(csvFile)
 writer.writerow(['Timestamp','Raw','Voltage'])
@@ -40,7 +40,7 @@ while power:
     writer = csv.writer(csvFile)
     writer.writerow([str(ts),str(raw),str(voltage)])
     csvFile.close()
-    if(voltage < threshold or not(GPIO.input(powerBCM)) ):
+    if(voltage < threshold):
         power = False
         messagebox.showwarning("Shut Down","Sleeping")
         #sleep(30)
