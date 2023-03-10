@@ -5,7 +5,7 @@ data = readtable("18650-Powered_RPI_4_-_Sheet1.csv");
 f = figure;
 plot(data.TimeElapsed_Minutes_,data.BatteryVoltage_Volts_,'LineWidth',2);
 title('Battery Life Expectancy');
-set(gca,"FontSize",12);
+set(gca,"FontSize",14);
 xlabel('Time [Minutes]');
 ylabel('Battery Voltage [Volts]');
 hold on;
