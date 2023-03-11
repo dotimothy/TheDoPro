@@ -19,7 +19,7 @@ powerBoard = 5
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 # GPIO.setmode(GPIO.BCM)
 # GPIO.setup(powerBCM,GPIO.IN,pull_up_down=GPIO.PUD_UP)
-threshold = 0
+threshold = 3.2
 supply = 5.18
 
 print('Monitoring Voltage of the Battery using MCP3008')
@@ -43,7 +43,7 @@ while power:
     if(voltage < threshold):
         power = False
         messagebox.showwarning("Shut Down","Sleeping")
-        #sleep(30)
+        sleep(30)
         #os.system('sudo shutdown -h now')
     
     # Pause
