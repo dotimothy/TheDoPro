@@ -114,7 +114,7 @@ def imagePreview(root,master,lbl):
 			saveImage(image_L,'./results')
 			saveImage(image_R,'./results')
 		master['settings']['save'] = 'Off'
-	im = cv.resize(im,(640,480))
+	im = cv.resize(im,(160,120))
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
@@ -122,6 +122,7 @@ def imagePreview(root,master,lbl):
 	lbl.after(25,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
+	root.geometry('640x480')
 	if(sys.platform == 'win32'):
 		root.iconbitmap('../Images/favicon.ico')
 	for widget in root.winfo_children():
@@ -318,7 +319,6 @@ if __name__ == '__main__':
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		setupGPIO(master)
 	root = tk.Tk()
-	root.geometry('1280x720')
 	lbl = tk.Label(root)
 	im = None
 	setupPreview(root,master,lbl)

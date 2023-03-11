@@ -32,7 +32,7 @@ def setupPreview(root,lbl,exit):
 	if(sys.platform == 'win32'):
 		root.iconbitmap('../Images/favicon.ico')
 	lbl.grid(row=1,column=1,padx=20,pady=10)
-	im = cv.resize(cv.imread('../Images/TheDoPro.jpg'),(180,120))
+	im = cv.resize(cv.imread('../Images/TheDoPro.jpg'),(160,120))
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
