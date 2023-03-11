@@ -179,7 +179,7 @@ def configSettings(master):
 	if(sys.platform == 'win32'): 
 		root.iconbitmap('../Images/favicon.ico')
 	root.title('TheDoPro Visualization Mode Settings')
-	root.geometry('960x540')
+	root.geometry('640x480')
 
 	title = tk.Label(root,text='Settings',font=("Courier",30))
 	title.grid(row=0,column=1)
