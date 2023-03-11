@@ -192,9 +192,9 @@ def configSettings(master):
 	mode = tk.StringVar(root)
 	mode.set(master['settings']['mode'])
 	modeSelection = tk.OptionMenu(root,mode,*modes)
-	modeSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	modeSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 	modeSelections = root.nametowidget(modeSelection.menuname)
-	modeSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+	modeSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 	modeSelection.grid(row=1,column=2)
 
 	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",12))
@@ -203,9 +203,9 @@ def configSettings(master):
 	rectification = tk.StringVar(root)
 	rectification.set(master['settings']['rectification'])
 	rectSelection = tk.OptionMenu(root,rectification,*rectifications)
-	rectSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	rectSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 	rectSelections = root.nametowidget(rectSelection.menuname)
-	rectSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+	rectSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 	rectSelection.grid(row=2,column=2)
 
 	cmapLabel = tk.Label(root,text="Color Map: ",font=("Courier",12))
@@ -214,9 +214,9 @@ def configSettings(master):
 	cmap = tk.StringVar(root)
 	cmap.set(master['settings']['colormap'].capitalize())
 	cmapSelection = tk.OptionMenu(root,cmap,*cmapModes)
-	cmapSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+	cmapSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 	cmapSelections = root.nametowidget(cmapSelection.menuname)
-	cmapSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+	cmapSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 	cmapSelection.grid(row=3,column=2)
 
 	disparity = tk.StringVar(root)
@@ -226,9 +226,9 @@ def configSettings(master):
 		disLabel.grid(row=4,column=1)
 		disModes = [16,32,64,112,256]
 		disSelection = tk.OptionMenu(root,disparity,*disModes)
-		disSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		disSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 		disSelections = root.nametowidget(disSelection.menuname)
-		disSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+		disSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		disSelection.grid(row=4,column=2)
 
 	relative = tk.StringVar(root)
@@ -238,9 +238,9 @@ def configSettings(master):
 		reLabel.grid(row=5,column=1)
 		reModes = ['On','Off']
 		reSelection = tk.OptionMenu(root,relative,*reModes)
-		reSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		reSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 		reSelections = root.nametowidget(reSelection.menuname)
-		reSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+		reSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		reSelection.grid(row=5,column=2)
 
 	flash = tk.StringVar(root)
@@ -250,9 +250,9 @@ def configSettings(master):
 		flashLabel.grid(row=6,column=1)
 		flashModes = ['On','Off']
 		flashSelection = tk.OptionMenu(root,flash,*flashModes)
-		flashSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		flashSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 		flashSelections = root.nametowidget(flashSelection.menuname)
-		flashSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+		flashSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		flashSelection.grid(row=6,column=2)
 
 	exposure = tk.StringVar(root)
@@ -262,9 +262,9 @@ def configSettings(master):
 		exposLabel.grid(row=7,column=1)
 		exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-12.0]
 		exposSelection = tk.OptionMenu(root,exposure,*exposModes)
-		exposSelection.config(font=tkFont.Font(family='Arial',size=24,weight=tkFont.BOLD))
+		exposSelection.config(font=tkFont.Font(family='Arial',size=12,weight=tkFont.BOLD))
 		exposSelections = root.nametowidget(exposSelection.menuname)
-		exposSelections.configure(font=tkFont.Font(family='Arial',size=18,weight=tkFont.BOLD))
+		exposSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		exposSelection.grid(row=7,column=2)
 
 	confirm = tk.Button(root,text="Update Settings",font=("Courier",12),command=lambda:updateSettings(master,mode.get(),rectification.get(),cmap.get(),disparity.get(),relative.get(),flash.get(),exposure.get(),root))
