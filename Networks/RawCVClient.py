@@ -3,8 +3,8 @@ import cv2 as cv
 import numpy as np
 
 # define the host and port number
-HOST = 'localhost'
-PORT = 1234
+HOST = 'sj.timothydo.me'
+PORT = 31723
 
 
 

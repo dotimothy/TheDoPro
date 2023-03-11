@@ -8,8 +8,8 @@ threed = __import__('3D-Reconstruction')
 
 
 # define the host and port number
-HOST = 'localhost'
-PORT = 1234
+HOST = '0.0.0.0'
+PORT = 31723
 
 # create a socket object
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
