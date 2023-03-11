@@ -245,7 +245,7 @@ def configSettings(master):
 
 	flash = tk.StringVar(root)
 	flash.set(master['settings']['flash'])
-	if(programMode == 1 and sys.platform == 'linux'):
+	if(sys.platform == 'linux'):
 		flashLabel = tk.Label(root,text="Flash: ",font=("Courier",12))
 		flashLabel.grid(row=6,column=1)
 		flashModes = ['On','Off']
