@@ -45,9 +45,9 @@ def createSTL(inputPCPath,outputSTLPath):
 	# Convert to STL file
 	o3d.io.write_triangle_mesh(outputSTLPath, mesh)
 
-programMode = 3
-if(programMode and not(cs.checkCams())):
-	programMode = 2
+programMode = 1
+if(programMode == 1 and not(cs.checkCams())):
+	programMode = 3
 
 
 # GPIO Functions 
@@ -138,6 +138,7 @@ def imagePreview(root,master,lbl):
 	lbl.after(50,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
+	root.geometry('640x480')
 	if(sys.platform == 'win32'):
 		root.iconbitmap('../Images/favicon.ico')
 	for widget in root.winfo_children():
@@ -310,7 +311,6 @@ if __name__ == '__main__':
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		setupGPIO(master)
 	root = tk.Tk()
-	root.geometry('1280x720')
 	lbl = tk.Label(root)
 	im = None
 	setupPreview(root,master,lbl)

@@ -11,12 +11,12 @@ if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 else: 
 	sys.path.insert(1,'../Vision')
-programMode = 3
+programMode = 1
 
 
 import customStereo as cs 
 if(programMode == 1 and not(cs.checkCams())):
-	programMode = 0
+	programMode = 2
 
 
 # GPIO Functions 

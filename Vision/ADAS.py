@@ -15,7 +15,7 @@ if(sys.platform == 'linux'):
 import customStereo as cs 
 
 programMode = 1
-if(programMode and not(cs.checkCams())):
+if(programMode == 1 and not(cs.checkCams())):
 	programMode = 0
 
 # Calculates Density of Non-Zero Pixels
