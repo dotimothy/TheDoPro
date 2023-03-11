@@ -224,7 +224,7 @@ def configSettings(master):
 	if(master['settings']['mode'] == 'OpenCV_SGBM' or master['settings']['mode'] == 'OpenCV_BM'):
 		disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",12))
 		disLabel.grid(row=4,column=1)
-		disModes = [16,32,64,112,256]
+		disModes = [16,32,64,128,256]
 		disSelection = tk.OptionMenu(root,disparity,*disModes)
 		disSelection.config(font=tkFont.Font(family='Arial',size=6,weight=tkFont.BOLD))
 		disSelections = root.nametowidget(disSelection.menuname)
