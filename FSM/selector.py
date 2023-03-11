@@ -27,6 +27,7 @@ def shutdown():
 
 def setupPreview(root,lbl,exit):
 	root.title('TheDoPro Program Selector')
+	root.geometry('240x320')
 	if(sys.platform == 'win32'):
 		root.iconbitmap('../Images/favicon.ico')
 	lbl.grid(row=1,column=1,padx=10,pady=10)
