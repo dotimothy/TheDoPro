@@ -47,4 +47,4 @@ while power:
         #os.system('sudo shutdown -h now')
     
     # Pause
-    sleep(60)
+    sleep(10)
