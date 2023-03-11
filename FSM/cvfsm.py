@@ -114,7 +114,7 @@ def imagePreview(root,master,lbl):
 			saveImage(image_L,'./results')
 			saveImage(image_R,'./results')
 		master['settings']['save'] = 'Off'
-	im = cv.resize(im,(160,120))
+	im = cv.resize(im,(320,240))
 	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
