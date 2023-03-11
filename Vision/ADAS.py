@@ -174,9 +174,9 @@ def imagePreview(root,master,lbl):
 			mapClassifications.append(classifyCenter(center[2],center[1],center[0],mapCounts[i],numPixels))
 		detect = not(True in (classification == 1 for classification in mapClassifications)) 
 		root.title(f'TheDoPro ADAS System Detected: {detect}')
-		if(sys.platform == 'linux' and detect):
+		if(sys.platform == 'linux'):
 				for led in master['leds']: #Turns on Light if Detected.
-					GPIO.output(master['leds'][led]['pin'],1)
+					GPIO.output(master['leds'][led]['pin'],1 if detect else 0)
 
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
