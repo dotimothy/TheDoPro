@@ -1,8 +1,11 @@
 import socket
-import cv2
+import cv2 as cv
 import numpy as np
 import sys
-sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
+import open3d as o3d
+sys.path.insert(1,'../Vision')
+threed = __import__('3D-Reconstruction')
+
 
 # define the host and port number
 HOST = 'localhost'
@@ -16,8 +19,8 @@ s.bind((HOST, PORT))
 
 # listen for incoming connections
 s.listen()
-try: 
-	while True:
+while True:
+	try: 
 		# wait for a connection
 		conn, addr = s.accept()
 		print(f'Connected by {addr}')
@@ -30,7 +33,7 @@ try:
 		    if not data:
 		        break
 		    img_data += data
-		img1 = cv2.imdecode(np.frombuffer(img_data, np.uint8), cv2.IMREAD_COLOR)
+		imgL = cv.imdecode(np.frombuffer(img_data, np.uint8), cv.IMREAD_COLOR)
 
 		# receive the second image
 		img_size = int.from_bytes(conn.recv(4), byteorder='big')
@@ -40,15 +43,14 @@ try:
 		    if not data:
 		        break
 		    img_data += data
-		img2 = cv2.imdecode(np.frombuffer(img_data, np.uint8), cv2.IMREAD_COLOR)
+		imgR = cv.imdecode(np.frombuffer(img_data, np.uint8), cv.IMREAD_COLOR)
 
-		# show the images
-		cv2.imshow('image1', img1)
-		cv2.imshow('image2', img2)
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		pcd = threed.reconstructPointCloudFromDisp(imgL,imgR)
+		o3d.visualization.draw_geometries([pcd], point_show_normal=True)
+
 
 		# close the connection
 		conn.close()
-except KeyboardInterrupt:
-	s.close()
+	except KeyboardInterrupt:
+		s.close()
+		exit()

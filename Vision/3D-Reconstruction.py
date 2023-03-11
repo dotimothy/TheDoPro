@@ -13,9 +13,14 @@ from PIL import Image, ImageTk
 import sys
 if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	import RPi.GPIO as GPIO
+if(sys.platform == 'linux' or sys.platform == 'linux2'):
+	import RPi.GPIO as GPIO
 	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
+	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Networks')
 else: 
 	sys.path.insert(1,'../Vision')
+	sys.path.insert(1,'../Networks')
+import RawCVClient as rcc
 
 # Point Cloud Functions
 def create_pcd(img, depth, f, cx, cy):
@@ -48,9 +53,13 @@ def createSTL(inputPCPath,outputSTLPath):
 	# Convert to STL file
 	o3d.io.write_triangle_mesh(outputSTLPath, mesh)
 
-programMode = 1
+def reconstructPointCloudFromDisp(imgL,imgR):
+	return create_pcd(imgL,-cs.disparityToDepthScanning(cs.stereoSGBM.compute(imgL,imgR)),f=551.038915543398,cx=287.359515629467,cy=269.784821130991)
+
+
+programMode = 2
 if(programMode == 1 and not(cs.checkCams())):
-	programMode = 3
+	programMode = 2
 
 
 # GPIO Functions 
@@ -121,9 +130,11 @@ def imagePreview(root,master,lbl):
 			image_L = cs.rectifyLeft(image_L)
 			image_R = cs.rectifyRight(image_R)
 		im = image_L
-		pcd = create_pcd(image_L,-cs.disparityToDepthScanning(cs.stereoSGBM.compute(image_L,image_R)),f=551.038915543398,cx=287.359515629467,cy=269.784821130991)
 		if(sys.platform == 'win32'):
+			pcd = reconstructPointCloudFromDisp(image_L,image_R)
 			o3d.visualization.draw_geometries([pcd], point_show_normal=True)
+		else: 
+			rcc.sendStereoPair(image_L,image_R)
 		updateState(master,'Right')
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
