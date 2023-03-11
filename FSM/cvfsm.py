@@ -235,40 +235,40 @@ def configSettings(master):
 	relative.set(master['settings']['relative'])
 	if(master['settings']['mode'] == 'OpenCV_SGBM' or master['settings']['mode'] == 'OpenCV_BM'):
 		reLabel = tk.Label(root,text="Relative: ",font=("Courier",12))
-		reLabel.grid(row=5,column=1)
+		reLabel.grid(row=1,column=3)
 		reModes = ['On','Off']
 		reSelection = tk.OptionMenu(root,relative,*reModes)
 		reSelection.config(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		reSelections = root.nametowidget(reSelection.menuname)
 		reSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
-		reSelection.grid(row=5,column=2)
+		reSelection.grid(row=1,column=4)
 
 	flash = tk.StringVar(root)
 	flash.set(master['settings']['flash'])
 	if(programMode == 1 and sys.platform == 'linux'):
 		flashLabel = tk.Label(root,text="Flash: ",font=("Courier",12))
-		flashLabel.grid(row=6,column=1)
+		flashLabel.grid(row=2,column=3)
 		flashModes = ['On','Off']
 		flashSelection = tk.OptionMenu(root,flash,*flashModes)
 		flashSelection.config(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		flashSelections = root.nametowidget(flashSelection.menuname)
 		flashSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
-		flashSelection.grid(row=6,column=2)
+		flashSelection.grid(row=2,column=4)
 
 	exposure = tk.StringVar(root)
 	exposure.set(master['settings']['exposure'])
 	if(programMode == 1):
 		exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",12))
-		exposLabel.grid(row=7,column=1)
+		exposLabel.grid(row=3,column=3)
 		exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-12.0]
 		exposSelection = tk.OptionMenu(root,exposure,*exposModes)
 		exposSelection.config(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
 		exposSelections = root.nametowidget(exposSelection.menuname)
 		exposSelections.configure(font=tkFont.Font(family='Arial',size=9,weight=tkFont.BOLD))
-		exposSelection.grid(row=7,column=2)
+		exposSelection.grid(row=3,column=4)
 
 	confirm = tk.Button(root,text="Update Settings",font=("Courier",12),command=lambda:updateSettings(master,mode.get(),rectification.get(),cmap.get(),disparity.get(),relative.get(),flash.get(),exposure.get(),root))
-	confirm.grid(row=8,column=2)
+	confirm.grid(row=4,column=3)
 	
 	root.mainloop()
 
