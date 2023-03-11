@@ -2,6 +2,7 @@ import os
 import sys
 import tkinter as tk
 from PIL import Image, ImageTk
+import cv2 as cv
 
 def setupGPIO(master):
 	GPIO.setwarnings(False)
