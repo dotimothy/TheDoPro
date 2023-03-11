@@ -135,7 +135,7 @@ def imagePreview(root,master,lbl):
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
 	master['lastState'] =  master['settings']['state']
-	lbl.after(25,imagePreview,root,master,lbl)
+	lbl.after(50,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
 	if(sys.platform == 'win32'):
