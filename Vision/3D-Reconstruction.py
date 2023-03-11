@@ -41,17 +41,12 @@ def create_pcd(img, depth, f, cx, cy):
         
         return pcd_o3d
 
-def createSTL(inputPCPath,outputSTLPath):
-	# Load Point-Cloud file using Open3D
-	pcd = o3d.io.read_point_cloud(inputPCPath)
-	pcd.estimate_normals()
-
-	# Reconstruct surface and convert to mesh
-	mesh, _ = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd)
+def create_mesh(pcd):
+	pcd = pcd.voxel_down_sample(voxel_size=0.05)
+	alpha = 0.1
+	mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_alpha_shape(pcd,alpha)
 	mesh.compute_vertex_normals()
-
-	# Convert to STL file
-	o3d.io.write_triangle_mesh(outputSTLPath, mesh)
+	return mesh
 
 def reconstructPointCloudFromDisp(imgL,imgR):
 	return create_pcd(imgL,-cs.disparityToDepthScanning(cs.stereoSGBM.compute(imgL,imgR)),f=551.038915543398,cx=287.359515629467,cy=269.784821130991)
@@ -130,9 +125,9 @@ def imagePreview(root,master,lbl):
 			image_L = cs.rectifyLeft(image_L)
 			image_R = cs.rectifyRight(image_R)
 		im = image_L
-		if(sys.platform == 'win32' and sys.argv[1] != '-net'):
-			pcd = reconstructPointCloudFromDisp(image_L,image_R)
-			o3d.visualization.draw_geometries([pcd], point_show_normal=True)
+		if(sys.platform == 'win32' and (len(sys.argv) == 1 or sys.argv[1] != '-net')):
+			mesh = create_mesh(reconstructPointCloudFromDisp(image_L,image_R))
+			o3d.visualization.draw_geometries([mesh], mesh_show_back_face=True)
 		else: 
 			rcc.sendStereoPair(image_L,image_R)
 		updateState(master,'Right')
@@ -282,21 +277,18 @@ if __name__ == '__main__':
 	# f = 551.038915543398
 	# cx = 287.359515629467
 	# cy = 269.784821130991
-	# image_L = cv.imread("../Images/cup_L.jpg")
-	# image_L_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY)
-	# image_L = cv.cvtColor(image_L, cv.COLOR_BGR2RGB)
 
-	# image_R = cv.imread("../Images/cup_R.jpg")
-	# image_R_gray = cv.cvtColor(image_L, cv.COLOR_BGR2GRAY)
-	# image_R = cv.cvtColor(image_R, cv.COLOR_BGR2RGB)
+	# image_L = cs.readLeft(3)
+	# image_R = cs.readRight(3)
 
-	# cs.adjustNumDisp(256)
+	# cs.adjustNumDisp(64)
 	# disparity = cs.stereoSGBM.compute(image_L, image_R)
-	# depth =  -cs.disparityToDepthScanning(disparity)
+	# depth =  -cs.disparityToDepthADAS(disparity)
 
 	# pcd = create_pcd(image_L, depth, f, cx, cy)
-	# o3d.visualization.draw_geometries([pcd], point_show_normal=True)
-
+	# mesh = create_mesh(pcd)
+	# o3d.visualization([mesh],mesh_show_back_face=true)
+	
 	# pins are physical
 	master = {	
 		'lastState': 'Right',
