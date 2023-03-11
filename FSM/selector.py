@@ -31,7 +31,8 @@ def setupPreview(root,lbl,exit):
 	if(sys.platform == 'win32'):
 		root.iconbitmap('../Images/favicon.ico')
 	lbl.grid(row=1,column=1,padx=10,pady=10)
-	imTk = ImageTk.PhotoImage(image=Image.open('../Images/TheDoPro.jpg'))
+	im = cv.imresize(cv.imread('../Images/TheDoPro.jpg'),(320,240))
+	imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
 	tk.Button(root,text="Visualiziation",font=("Courier",16),command=lambda:triggerProgram('vis',root)).grid(row=2,column=1,padx=10,pady=10)
