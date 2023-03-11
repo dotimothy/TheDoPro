@@ -176,7 +176,7 @@ def imagePreview(root,master,lbl):
 		root.title(f'TheDoPro ADAS System Detected: {detect}')
 		if(sys.platform == 'linux'):
 				for led in master['leds']: #Turns on Light if Detected.
-					GPIO.output(master['leds'][led]['pin'],detect)
+					GPIO.output(master['leds'][led]['pin'],detect) 
 
 	if(master['settings']['save'] == 'On'):
 		if(not os.path.exists('./results')):
