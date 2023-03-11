@@ -155,6 +155,8 @@ def turnOnSave(master):
 	master['settings']['save'] = 'On'
 
 def openGallery(directory):
+	if(not(os.path.exists('./results'))):
+		os.mkdir('./results')
 	if(sys.platform == 'win32'):
 		os.system(f'explorer {os.getcwd()}\\results')
 	elif(sys.platform == 'linux' or sys.platform == 'linux2'):
