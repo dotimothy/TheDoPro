@@ -379,7 +379,7 @@ def readLeft(mode):
     elif(mode == 3): #Daniel
         return cv.cvtColor(cv.imread(f'../Images/daniel2_L.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 4): #Tim
-        return cv.cvtColor(cv.imread(f'../Images/tim_L.jpg',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/tim_L.png',1),cv.COLOR_BGR2RGB)
 
 def readRight(mode):
     if(mode == 0): #Dev, Will Be an Image
@@ -393,7 +393,7 @@ def readRight(mode):
     elif(mode == 3): #Daniel
         return cv.cvtColor(cv.imread(f'../Images/daniel2_R.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 4): #Tim
-        return cv.cvtColor(cv.imread(f'../Images/tim_R.jpg',1),cv.COLOR_BGR2RGB)
+        return cv.cvtColor(cv.imread(f'../Images/tim_R.png',1),cv.COLOR_BGR2RGB)
 
 
 def rectifyLeft(leftFrame):

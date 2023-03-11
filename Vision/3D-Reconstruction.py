@@ -57,9 +57,9 @@ def reconstructPointCloudFromDisp(imgL,imgR):
 	return create_pcd(imgL,-cs.disparityToDepthScanning(cs.stereoSGBM.compute(imgL,imgR)),f=551.038915543398,cx=287.359515629467,cy=269.784821130991)
 
 
-programMode = 2
+programMode = 3
 if(programMode == 1 and not(cs.checkCams())):
-	programMode = 2
+	programMode = 3
 
 
 # GPIO Functions 
