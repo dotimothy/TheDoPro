@@ -15,7 +15,7 @@ programMode = 3
 
 
 import customStereo as cs 
-if(programMode and not(cs.checkCams())):
+if(programMode == 1 and not(cs.checkCams())):
 	programMode = 0
 
 
