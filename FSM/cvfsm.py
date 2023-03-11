@@ -304,7 +304,7 @@ if __name__ == '__main__':
 			'state': 'Right',
 			'mode': 'OpenCV_SGBM',
 			'rectification': 'Off',
-			'flash': 'Off',
+			'flash': 'On',
 			'save': 'Off',
 			'relative':'Off',
 			'colormap':'jet',

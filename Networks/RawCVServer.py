@@ -1,6 +1,8 @@
 import socket
 import cv2
 import numpy as np
+import sys
+sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
 
 # define the host and port number
 HOST = 'localhost'

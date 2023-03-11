@@ -13,6 +13,9 @@ from PIL import Image, ImageTk
 import sys
 if(sys.platform == 'linux' or sys.platform == 'linux2'):
 	import RPi.GPIO as GPIO
+	sys.path.insert(1,'/home/tdlh/Github/TheDoPro/Vision')
+else: 
+	sys.path.insert(1,'../Vision')
 
 # Point Cloud Functions
 def create_pcd(img, depth, f, cx, cy):
