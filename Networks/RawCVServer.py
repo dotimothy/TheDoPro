@@ -45,7 +45,7 @@ while True:
 		    img_data += data
 		imgR = cv.imdecode(np.frombuffer(img_data, np.uint8), cv.IMREAD_COLOR)
 
-		mesh = threed.createMesh(threed.reconstructPointCloudFromDisp(imgL,imgR))
+		mesh = threed.create_mesh(threed.reconstructPointCloudFromDisp(imgL,imgR))
 		#o3d.visualization.draw_geometries([pcd], point_show_normal=True)
 		o3d.visualization.draw_geometries([mesh],mesh_show_back_face=True)
 

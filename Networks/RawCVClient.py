@@ -1,11 +1,15 @@
 import socket
 import cv2 as cv
 import numpy as np
+import sys
 
 # define the host and port number
 HOST = 'sj.timothydo.me'
 PORT = 31723
 
+if(len(sys.argv) != 1 and sys.argv[1] == '-dev'):
+	HOST = 'localhost'
+	PORT = 31723
 
 
 def sendStereoPair(imgL,imgR):
@@ -32,6 +36,6 @@ def sendStereoPair(imgL,imgR):
 
 if __name__ == '__main__':
 	# load the images
-	imgL = cv.cvtColor(cv.imread('../Images/daniel_L.jpg', cv.IMREAD_COLOR),cv.COLOR_BGR2RGB)
-	imgR = cv.cvtColor(cv.imread('../Images/daniel_R.jpg', cv.IMREAD_COLOR),cv.COLOR_BGR2RGB)
+	imgL = cv.cvtColor(cv.imread('../Images/daniel2_L.jpg', cv.IMREAD_COLOR),cv.COLOR_BGR2RGB)
+	imgR = cv.cvtColor(cv.imread('../Images/daniel2_R.jpg', cv.IMREAD_COLOR),cv.COLOR_BGR2RGB)
 	sendStereoPair(imgL,imgR)

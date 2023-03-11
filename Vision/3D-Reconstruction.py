@@ -43,7 +43,7 @@ def create_pcd(img, depth, f, cx, cy):
 
 def create_mesh(pcd):
 	pcd = pcd.voxel_down_sample(voxel_size=0.05)
-	alpha = 0.1
+	alpha = 0.05
 	mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_alpha_shape(pcd,alpha)
 	mesh.compute_vertex_normals()
 	return mesh

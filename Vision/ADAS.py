@@ -191,7 +191,7 @@ def imagePreview(root,master,lbl):
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
 	master['lastState'] =  master['settings']['state']
-	lbl.after(50,imagePreview,root,master,lbl)
+	lbl.after(500,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
 	root.geometry('640x480')
