@@ -130,7 +130,7 @@ def imagePreview(root,master,lbl):
 			image_L = cs.rectifyLeft(image_L)
 			image_R = cs.rectifyRight(image_R)
 		im = image_L
-		if(sys.platform == 'win32'):
+		if(sys.platform == 'win32' and sys.argv[1] != '-net'):
 			pcd = reconstructPointCloudFromDisp(image_L,image_R)
 			o3d.visualization.draw_geometries([pcd], point_show_normal=True)
 		else: 
