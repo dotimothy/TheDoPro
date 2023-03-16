@@ -108,14 +108,14 @@ def imagePreview(root,master,lbl):
 		setupPreview(root,master,lbl)
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		updateButtonState(master)
-		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Right
-			updateState(master,'Right')
-		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Left
-			updateState(master,'Left')
+		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Toggle Right/Left
+			updateState(master,'Right' if(master['settings']['state'] == 'Left' else 'Left'))
+		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
+			configSettings(master)
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
 			updateState(master,'Capture')
 		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
-			configSettings(master)
+			openGallery('./results')
 	if(master['settings']['state'] != 'Capture'):
 		root.title(f'TheDoPro ADAS Mode (State: {master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
