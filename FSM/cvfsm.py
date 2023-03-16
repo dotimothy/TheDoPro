@@ -308,7 +308,7 @@ if __name__ == '__main__':
 			'save': 'Off',
 			'relative':'On',
 			'colormap':'jet',
-			'disparity':64,
+			'disparity':128,
 			'exposure':-6.0
 		}
 	}
