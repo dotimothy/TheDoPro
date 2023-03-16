@@ -56,7 +56,7 @@ def setupPreview(root,lbl,master):
 			triggerProgram('ADAS',root)
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #3D-Reconstruction
 			triggerProgram('3D',root)
-	root.after(250,setupPreview,root,lbl,master)
+	root.after(100,setupPreview,root,lbl,master)
 
 
 if __name__ == '__main__':
