@@ -3,6 +3,8 @@ import sys
 import tkinter as tk
 from PIL import Image, ImageTk
 import cv2 as cv
+if(sys.platform == 'linux'):
+	import RPi.GPIO as GPIO
 
 def setupGPIO(master):
 	GPIO.setwarnings(False)
