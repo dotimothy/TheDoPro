@@ -109,7 +109,7 @@ def imagePreview(root,master,lbl):
 	if(sys.platform == 'linux' or sys.platform == 'linux2'):
 		updateButtonState(master)
 		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Toggle Right/Left
-			updateState(master,'Right' if(master['settings']['state'] == 'Left' else 'Left'))
+			updateState(master,'Right' if(master['settings']['state'] == 'Left') else 'Left')
 		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
 			configSettings(master)
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
