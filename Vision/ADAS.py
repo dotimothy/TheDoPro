@@ -16,7 +16,7 @@ import customStereo as cs
 
 programMode = 1
 if(programMode == 1 and not(cs.checkCams())):
-	programMode = 0
+	programMode = 3
 
 # Calculates Density of Non-Zero Pixels
 def calculateDensity(image):
