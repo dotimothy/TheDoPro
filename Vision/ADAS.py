@@ -377,7 +377,7 @@ if __name__ == '__main__':
 			'rectification': 'Off',
 			'flash': 'Off',
 			'save': 'Off',
-			'relative':'Off',
+			'relative':'On',
 			'colormap':'jet',
 			'disparity':64,
 			'exposure':-6.0
