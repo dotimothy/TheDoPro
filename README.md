@@ -5,4 +5,4 @@ Members: Timothy Do, Daniel Jilani, Zaya Lazar, Harrison Nguyen
 Advisor: Professor [Glenn Healey](https://engineering.uci.edu/users/glenn-healey)
 <br> 
 <br>
-<img src='./Images/Hardware Connection Schematic AI Enhanced.png'/>
+<img src='./Documentation/Images/TheDoPro UI.jpg'/>
