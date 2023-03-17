@@ -43,8 +43,7 @@ while power:
     if(voltage < threshold or GPIO.input(powerBCM) == 0):
         power = False
         win = tk.Tk()
-        prompt = "Shutting Down"
-        msg = tk.Label(win,text=prompt)
+        msg = tk.Label(win,text="Shut Down")
         msg.title("Shut Down")
         msg.pack()
         win.mainloop()
