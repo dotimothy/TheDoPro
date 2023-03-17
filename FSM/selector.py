@@ -39,7 +39,7 @@ def setupPreview(root,lbl,master):
 		if(sys.platform == 'win32'):
 			root.iconbitmap('../Images/favicon.ico')
 		lbl.grid(row=1,column=1,padx=20,pady=10)
-		im = cv.resize(cv.imread('../Images/TheDoPro.jpg'),(160,120))
+		im = cv.cvtColor(cv.resize(cv.imread('../Images/TheDoPro.jpg'),(160,120)),cv.COLOR_BGR2RGB)
 		imTk = ImageTk.PhotoImage(image=Image.fromarray(im))
 		lbl.imtk = imTk
 		lbl.configure(image=imTk)
@@ -56,7 +56,7 @@ def setupPreview(root,lbl,master):
 			triggerProgram('ADAS',root)
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #3D-Reconstruction
 			triggerProgram('3D',root)
-	root.after(100,setupPreview,root,lbl,master)
+	root.after(250,setupPreview,root,lbl,master)
 
 
 if __name__ == '__main__':

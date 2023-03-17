@@ -55,11 +55,11 @@ def imagePreview(root,master,lbl):
 		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Toggle Right/Left
 			updateState(master,'Right' if(master['settings']['state'] == 'Left') else 'Left')
 		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
-			lambda:configSettings(master)
+			configSettings(master)
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
 			updateState(master,'Capture')
 		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Gallery
-			lambda:openGallery('./results')
+			openGallery('./results')
 	root.title(f'TheDoPro Visualization Mode (State: {master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
 		im = cs.readRight(programMode)
