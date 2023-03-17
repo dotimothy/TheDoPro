@@ -16,7 +16,7 @@ import customStereo as cs
 
 programMode = 1
 if(programMode == 1 and not(cs.checkCams())):
-	programMode = 3
+	programMode = 0
 
 # Calculates Density of Non-Zero Pixels
 def calculateDensity(image):
@@ -111,11 +111,11 @@ def imagePreview(root,master,lbl):
 		if(master['buttons']['sel1']['state'] and not(master['buttons']['sel2']['state'])and not(master['buttons']['capture']['state'])): #Toggle Right/Left
 			updateState(master,'Right' if(master['settings']['state'] == 'Left') else 'Left')
 		elif(not(master['buttons']['sel1']['state']) and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
-			lambda:configSettings(master)
+			configSettings(master)
 		elif(not(master['buttons']['sel1']['state']) and not(master['buttons']['sel2']['state']) and master['buttons']['capture']['state']): #Capture
 			updateState(master,'Capture')
 		elif(master['buttons']['sel1']['state'] and master['buttons']['sel2']['state'] and not(master['buttons']['capture']['state'])): #Settings
-			lambda:openGallery('./results')
+			openGallery('./results')
 	if(master['settings']['state'] != 'Capture'):
 		root.title(f'TheDoPro ADAS Mode (State: {master["settings"]["state"]})')
 	if(master['settings']['state'] == 'Right'):
@@ -191,7 +191,7 @@ def imagePreview(root,master,lbl):
 	lbl.imtk = imTk
 	lbl.configure(image=imTk)
 	master['lastState'] =  master['settings']['state']
-	lbl.after(500,imagePreview,root,master,lbl)
+	lbl.after(100,imagePreview,root,master,lbl)
 	
 def setupPreview(root,master,lbl):
 	root.geometry('640x480')
