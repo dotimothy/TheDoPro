@@ -365,8 +365,8 @@ stereoMapR_y = cv_file.getNode('stereoMapR_y').mat()
 # Parameters for the Simulation
 counter = 0
 # depths = [72,66,60,54,48,45,42,39,36,33,30,27,24,21,18,15,12,9,6,3]
-depths = [12,15,18,21,24,27,30,33,36]
-interval = 10
+depths = [12,18,24,30,36]
+interval = 5
 def readLeft(mode):
     if(mode == 0): #Dev, Will Be an Image
         global counter
