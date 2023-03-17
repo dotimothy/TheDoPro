@@ -6,7 +6,7 @@ import datetime
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import RPi.GPIO as GPIO
-from tkinter import messagebox
+import tkinter as tk
 
 
 # Software SPI configuration:
@@ -42,9 +42,14 @@ while power:
     csvFile.close()
     if(voltage < threshold or GPIO.input(powerBCM) == 0):
         power = False
-        messagebox.showwarning("Shut Down")
-        sleep(30)
-        os.system('sudo shutdown -h now')
+        win = tk.Tk()
+        msg = tk.Label(win,text="Shutting Down")
+        msg.pack()
+        win.mainloop()
+        sleep(3)
+        win.destroy()
+        sleep(7)
+        os.system('shutdown -h now')
     
     # Pause
     sleep(3)
