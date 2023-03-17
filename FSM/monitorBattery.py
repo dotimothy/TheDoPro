@@ -50,7 +50,7 @@ while power:
         sleep(3)
         win.destroy()
         sleep(7)
-        os.system('shutdown -h now')
+        os.system('shutdown now')
     
     # Pause
     sleep(3)
