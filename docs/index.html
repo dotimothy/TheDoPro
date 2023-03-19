@@ -1,45 +1,13 @@
 <html>
 
 <head>
-	<link rel="shortcut icon" type="image/png" href="https://dotimothy.github.io/images/happycase.png" />
+	<link rel="shortcut icon" type="image/png" href="https://timothydo.me/images/happycase.png" />
+	<title>The Do-Pro Senior Design Project</title>
+	<link rel="stylesheet" href="thedopro.css"/>
+	<script src="thedopro.js"></script>
 </head>
 
 <base target="_blank">
-
-<style>
-	* {
-		background-color:#212121;
-	}
-	h1, p 
-	{
-		font-family:  Verdana;
-		color:  white;
-		cursor: pointer;
-	}
-	footer {
-		position:  absolute;
-		bottom: 1%;
-		right: 1%;
-		text-decoration: underline;
-	}
-	a {
-		color: black;
-	}
-	a:hover, p:hover {
-		opacity: 0.5;
-		transition: 0.5s;
-	}
-
-</style>
-
-<script>
-	function viewPaper() {
-		document.getElementById('doc').innerHTML = `<iframe width="100%" height="95%" frameborder="0" src="https://docs.google.com/gview?url=https://github.com/dotimothy/TheDoPro/raw/main/Documentation/The_Do_Pro_%20A_Simplistic_Stereovision_Camera.pdf&embedded=true"></iframe>`
-	}
-	function viewPoster() {
-		document.getElementById('doc').innerHTML = `<iframe width="100%" height="95%" frameborder="0" src="https://docs.google.com/gview?url=https://github.com/dotimothy/TheDoPro/raw/main/Documentation/PictureThis_Poster_Final.pdf&embedded=true"></iframe>`
-	}
-</script>
 
 <body onload="viewPoster()">
 	<h1>The Do-Pro: A Simplistic Stereo-Vision Camera</h1>
@@ -48,10 +16,10 @@
 </body>
 
 <footer>
-	<p onclick="viewPoster()" cursor="pointer">View the Poster</p>
-	<p onclick="viewPaper()"cursor="pointer">View the Paper</p>
-	<a href="https://github.com/dotimothy/TheDoPro"><p>View the Github Repo 📸</p></a>
+	<p onclick="viewPoster()" cursor="pointer">View the Poster 📰</p>
+	<p onclick="viewPaper()"cursor="pointer">View the Paper 📄</p>
 	<a href="https://www.youtube.com/playlist?list=PL5U5tpC4Z3h9w-yHr54CMzG9ISB1G6V07"><p>Video Journal 📽️</p></a>
+	<a href="https://github.com/dotimothy/TheDoPro"><p>Github Repo 📸</p></a>
 	
 </footer>
 

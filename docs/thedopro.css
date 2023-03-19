@@ -1,0 +1,23 @@
+* {
+	background-color:#212121;
+}
+h1, p 
+{
+	font-family:  Verdana;
+	color:  white;
+	cursor: pointer;
+}
+footer {
+	opacity: 0.75;
+	position:  fixed;
+	bottom: 1%;
+	right: 1%;
+	text-decoration: underline;
+}
+a {
+	color: black;
+}
+a:hover, p:hover {
+	opacity: 0.5;
+	transition: 0.5s;
+}
