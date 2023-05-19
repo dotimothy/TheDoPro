@@ -498,6 +498,7 @@ if(sys.platform == 'win32'):
     leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
     rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
 else:
+    adjustExposure(-5)
     leftCam = cv.VideoCapture('/dev/video2')
     rightCam = cv.VideoCapture('/dev/video0')
 if(checkCams()):
