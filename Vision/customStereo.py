@@ -10,7 +10,8 @@ import time
 import numpy as np
 from scipy import ndimage as nd
 from multiprocessing import Process, Queue
-from os import cpu_count,system
+from os import cpu_count
+import subprocess
 import sys
 from math import *
 # if(sys.platform == 'linux'):
@@ -340,8 +341,8 @@ def adjustExposure(exposure):
         percent = int(100+(exposure*10))
         if(exposure < -10):
             percent = 0
-        system(f"v4l2-ctl -d /dev/video0 -c exposure_absolute={str(percent)}")
-        system(f"v4l2-ctl -d /dev/video2 -c exposure_absolute={str(percent)}")
+        subprocess.check_call(f"v4l2-ctl -d /dev/video0 -c exposure_absolute={str(percent)}",shell=True)
+        subprocess.check_call(f"v4l2-ctl -d /dev/video2 -c exposure_absolute={str(percent)}",shell=True)
 # OpenCV Stereo Objects
 stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
