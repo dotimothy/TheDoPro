@@ -338,8 +338,10 @@ def adjustExposure(exposure):
         leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
         rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
     else:
+        global leftCam
+        global rightCam
         leftCam.release()
-        rightCam.release
+        rightCam.release()
         percent = int(150+(exposure*10))
         if(exposure < -10):
             percent = 0
