@@ -370,7 +370,7 @@ def adjustExposure(exposure):
     if(sys.platform == 'win32'):
         leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
         rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
-    elsez;
+    else:
         leftCam.release()
         rightCam.release()
         percent = int(150+(exposure*10))
@@ -380,7 +380,7 @@ def adjustExposure(exposure):
         subprocess.check_call(f"v4l2-ctl -d /dev/video2 -c exposure_absolute={str(percent)}",shell=True)
         leftCam = cv.VideoCapture('/dev/video2')
         rightCam = cv.VideoCapture('/dev/video0')
-# OpenCV Stereo Objects
+# OpenCV Stereo Objecats
 stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
 
