@@ -336,7 +336,10 @@ def adjustExposure(exposure):
     if(sys.platform == 'win32'):
         leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
         rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
-    el
+    else:
+        percent = int(100+(exposure*10))
+        os.system(f"v4l2-ctl -d /dev/video0 -c exposure_absolute={str(percent)}")
+        os.system(f"v4l2-ctl -d /dev/video0 -c exposure_absolute={str(percent)}")
 # OpenCV Stereo Objects
 stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
