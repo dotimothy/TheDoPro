@@ -404,7 +404,7 @@ def readLeft(mode):
         counter = counter + 1
         return cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        return cv.equalizeHist(cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB))
+        return 1.25*cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
     elif(mode == 2): #Cup
         return cv.cvtColor(cv.imread(f'../Images/cup_L.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 3): #Daniel
@@ -418,7 +418,7 @@ def readRight(mode):
         counter = counter + 1
         return cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        return cv.equalizeHist(cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB))
+        return 1.25*cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
     elif(mode == 2): #Cup
         return cv.cvtColor(cv.imread(f'../Images/cup_R.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 3): #Daniel
