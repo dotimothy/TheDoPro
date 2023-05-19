@@ -17,6 +17,39 @@ from math import *
 # if(sys.platform == 'linux'):
 #     import v4l2capture
 
+# Run Code Below If Imported
+
+# Deprecated CUDA Support 
+# haveGPU = False
+# try:
+#     import cupy as cp
+#     haveGPU = True
+# except:
+#     print(f'No GPU Avaliable for cupy')
+
+# Tries and Open the Cameras #
+if(sys.platform == 'win32'):
+    leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
+    rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
+else:
+    leftCam = cv.VideoCapture('/dev/video2')
+    rightCam = cv.VideoCapture('/dev/video0')
+    adjustExposure(0)
+if(checkCams()):
+    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
+    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
+    leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+    leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+    rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+    rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
+    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+else:
+    leftCam.release()
+    rightCam.release()
+    print(f'No Webcams')
+
+
 
 # Disparity Computation Functions
 def vec_cost_block_matching(image_L_gray, image_R_gray, block_x, block_y, disp):
@@ -489,40 +522,6 @@ def processCapture(leftFrame,rightFrame,algor,downscale,relative,cmap):
         }
         disparity = cv.cvtColor(np.uint8(cmaps[cmap](disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
-
-# Run Code Below If Imported
-
-# Deprecated CUDA Support 
-# haveGPU = False
-# try:
-#     import cupy as cp
-#     haveGPU = True
-# except:
-#     print(f'No GPU Avaliable for cupy')
-
-# Tries and Open the Cameras #
-if(sys.platform == 'win32'):
-    leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
-    rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
-else:
-    leftCam = cv.VideoCapture('/dev/video2')
-    rightCam = cv.VideoCapture('/dev/video0')
-    adjustExposure(0)
-if(checkCams()):
-    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
-    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
-    leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-    leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
-    rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-    rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
-    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
-    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
-else:
-    leftCam.release()
-    rightCam.release()
-    print(f'No Webcams')
-
-
 
 if __name__ == "__main__":
 
