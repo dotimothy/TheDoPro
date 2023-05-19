@@ -338,7 +338,7 @@ def adjustExposure(exposure):
         rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
     else:
         percent = int(100+(exposure*10))
-        if(exposure < -10)
+        if(exposure < -10):
             percent = 0
         system(f"v4l2-ctl -d /dev/video0 -c exposure_absolute={str(percent)}")
         system(f"v4l2-ctl -d /dev/video2 -c exposure_absolute={str(percent)}")
