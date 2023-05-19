@@ -183,10 +183,10 @@ def configSettings(master):
 	root.title('TheDoPro Visualization Mode Settings')
 	root.geometry('640x480')
 
-	title = tk.Label(root,text='Settings',font=("Courier",14))
+	title = tk.Label(root,text='Settings',font=("Courier",12))
 	title.grid(row=0,column=1)
 	
-	modeLabel = tk.Label(root,text="Disparity Mode: ",font=("Courier",12))
+	modeLabel = tk.Label(root,text="Disparity Mode: ",font=("Courier",9))
 	modeLabel.grid(row=1,column=1)
 	modes = ['OpenCV_BM','OpenCV_SGBM','Cost Block','Multiblock']
 	mode = tk.StringVar(root)
@@ -197,7 +197,7 @@ def configSettings(master):
 	modeSelections.configure(font=tkFont.Font(family='Arial',size=4,weight=tkFont.BOLD))
 	modeSelection.grid(row=1,column=2)
 
-	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",12))
+	rectLabel = tk.Label(root,text="Rectification: ",font=("Courier",9))
 	rectLabel.grid(row=2,column=1)
 	rectifications = ['On','Off']
 	rectification = tk.StringVar(root)
@@ -208,7 +208,7 @@ def configSettings(master):
 	rectSelections.configure(font=tkFont.Font(family='Arial',size=4,weight=tkFont.BOLD))
 	rectSelection.grid(row=2,column=2)
 
-	cmapLabel = tk.Label(root,text="Color Map: ",font=("Courier",12))
+	cmapLabel = tk.Label(root,text="Color Map: ",font=("Courier",9))
 	cmapLabel.grid(row=3,column=1)
 	cmapModes = ['Jet','Gray','Bone','Rainbow','HSV','Viridis']
 	cmap = tk.StringVar(root)
@@ -222,7 +222,7 @@ def configSettings(master):
 	disparity = tk.StringVar(root)
 	disparity.set(master['settings']['disparity'])
 	if(master['settings']['mode'] == 'OpenCV_SGBM' or master['settings']['mode'] == 'OpenCV_BM'):
-		disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",12))
+		disLabel = tk.Label(root,text="Disparity Range: ",font=("Courier",9))
 		disLabel.grid(row=4,column=1)
 		disModes = [16,32,64,128,256]
 		disSelection = tk.OptionMenu(root,disparity,*disModes)
@@ -234,7 +234,7 @@ def configSettings(master):
 	relative = tk.StringVar(root)
 	relative.set(master['settings']['relative'])
 	if(master['settings']['mode'] == 'OpenCV_SGBM' or master['settings']['mode'] == 'OpenCV_BM'):
-		reLabel = tk.Label(root,text="Relative: ",font=("Courier",12))
+		reLabel = tk.Label(root,text="Relative: ",font=("Courier",9))
 		reLabel.grid(row=5,column=1)
 		reModes = ['On','Off']
 		reSelection = tk.OptionMenu(root,relative,*reModes)
@@ -246,7 +246,7 @@ def configSettings(master):
 	flash = tk.StringVar(root)
 	flash.set(master['settings']['flash'])
 	if(sys.platform == 'linux'):
-		flashLabel = tk.Label(root,text="Flash: ",font=("Courier",12))
+		flashLabel = tk.Label(root,text="Flash: ",font=("Courier",9))
 		flashLabel.grid(row=6,column=1)
 		flashModes = ['On','Off']
 		flashSelection = tk.OptionMenu(root,flash,*flashModes)
@@ -258,7 +258,7 @@ def configSettings(master):
 	exposure = tk.StringVar(root)
 	exposure.set(master['settings']['exposure'])
 	if(programMode == 1):
-		exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",12))
+		exposLabel = tk.Label(root,text="Exposure: ",font=("Courier",9))
 		exposLabel.grid(row=7,column=1)
 		exposModes = [-1.0,-2.0,-3.0,-4.0,-5.0,-6.0,-7.0,-8.0,-10.0,-11.0,-12.0,-13.0,-12.0]
 		exposSelection = tk.OptionMenu(root,exposure,*exposModes)
@@ -268,7 +268,7 @@ def configSettings(master):
 		exposSelection.grid(row=7,column=2)
 
 	confirm = tk.Button(root,text="Update Settings",font=("Courier",12),command=lambda:updateSettings(master,mode.get(),rectification.get(),cmap.get(),disparity.get(),relative.get(),flash.get(),exposure.get(),root))
-	confirm.grid(row=8,column=2)
+	confirm.grid(row=8,column=3)
 	
 	root.mainloop()
 
