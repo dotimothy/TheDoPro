@@ -333,9 +333,10 @@ def checkCams():
     return leftCam.isOpened() and rightCam.isOpened()
 
 def adjustExposure(exposure):
-    leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
-    rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
-
+    if(sys.platform == 'win32'):
+        leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
+        rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
+    el
 # OpenCV Stereo Objects
 stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
@@ -492,8 +493,8 @@ if(sys.platform == 'win32'):
     leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
     rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
 else:
-    leftCam = cv.VideoCapture('/dev/video0')
-    rightCam = cv.VideoCapture('/dev/video2')
+    leftCam = cv.VideoCapture('/dev/video2')
+    rightCam = cv.VideoCapture('/dev/video0')
 if(checkCams()):
     leftCam.set(cv.CAP_PROP_SHARPNESS,200)
     rightCam.set(cv.CAP_PROP_SHARPNESS,200)
