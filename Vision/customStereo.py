@@ -404,7 +404,7 @@ def readLeft(mode):
         counter = counter + 1
         return cv.cvtColor(cv.imread(f'../Images/Pillow/L_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        return cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB)
+        return np.uint8(1.25*cv.cvtColor(leftCam.read()[1],cv.COLOR_BGR2RGB))
     elif(mode == 2): #Cup
         return cv.cvtColor(cv.imread(f'../Images/cup_L.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 3): #Daniel
@@ -418,7 +418,7 @@ def readRight(mode):
         counter = counter + 1
         return cv.cvtColor(cv.imread(f'../Images/Pillow/R_{str(depths[trunc((counter % (interval*len(depths)))/(interval))])}.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 1): #Webcam
-        return cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB)
+        return np.uint8(1.25*cv.cvtColor(rightCam.read()[1],cv.COLOR_BGR2RGB))
     elif(mode == 2): #Cup
         return cv.cvtColor(cv.imread(f'../Images/cup_R.jpg',1),cv.COLOR_BGR2RGB)
     elif(mode == 3): #Daniel
@@ -434,8 +434,8 @@ def rectifyRight(rightFrame):
     return cv.remap(rightFrame,stereoMapR_x,stereoMapR_y,cv.INTER_LANCZOS4, cv.BORDER_CONSTANT, 0)
 
 def processCapture(leftFrame,rightFrame,algor,downscale,relative,cmap):
-    leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
-    rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
+    # leftFrameGray = cv.equalizeHist(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
+    # rightFrameGray = cv.equalizeHist(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
     #clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     # leftFrameGray = clahe.apply(cv.cvtColor(leftFrame, cv.COLOR_BGR2GRAY))
     # rightFrameGray = clahe.apply(cv.cvtColor(rightFrame, cv.COLOR_BGR2GRAY))
