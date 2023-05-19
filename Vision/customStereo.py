@@ -352,6 +352,8 @@ def checkCams():
     return leftCam.isOpened() and rightCam.isOpened()
 
 def adjustExposure(exposure):
+    global leftCam
+    global rightCam
     if(sys.platform == 'win32'):
         leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
         rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
