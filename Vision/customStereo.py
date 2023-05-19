@@ -338,11 +338,15 @@ def adjustExposure(exposure):
         leftCam.set(cv.CAP_PROP_EXPOSURE,exposure)
         rightCam.set(cv.CAP_PROP_EXPOSURE,exposure)
     else:
+        leftCam.release()
+        rightCam.release
         percent = int(150+(exposure*10))
         if(exposure < -10):
             percent = 0
         subprocess.check_call(f"v4l2-ctl -d /dev/video0 -c exposure_absolute={str(percent)}",shell=True)
         subprocess.check_call(f"v4l2-ctl -d /dev/video2 -c exposure_absolute={str(percent)}",shell=True)
+        leftCam = cv.VideoCapture('/dev/video2')
+        rightCam = cv.VideoCapture('/dev/video0')
 # OpenCV Stereo Objects
 stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
@@ -499,9 +503,9 @@ if(sys.platform == 'win32'):
     leftCam = cv.VideoCapture(1,cv.CAP_DSHOW)
     rightCam = cv.VideoCapture(0,cv.CAP_DSHOW)
 else:
-    adjustExposure(0)
     leftCam = cv.VideoCapture('/dev/video2')
     rightCam = cv.VideoCapture('/dev/video0')
+    adjustExposure(0)
 if(checkCams()):
     leftCam.set(cv.CAP_PROP_SHARPNESS,200)
     rightCam.set(cv.CAP_PROP_SHARPNESS,200)
