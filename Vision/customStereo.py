@@ -34,20 +34,6 @@ if(sys.platform == 'win32'):
 else:
     leftCam = cv.VideoCapture('/dev/video2')
     rightCam = cv.VideoCapture('/dev/video0')
-if(checkCams()):
-    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
-    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
-    leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-    leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
-    rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-    rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
-    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
-    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
-else:
-    leftCam.release()
-    rightCam.release()
-    print(f'No Webcams')
-
 
 
 # Disparity Computation Functions
@@ -382,7 +368,6 @@ def adjustExposure(exposure):
 # OpenCV Stereo Objecats
 stereoBM = cv.StereoBM_create(numDisparities=256,blockSize=17)
 stereoSGBM = cv.StereoSGBM_create(minDisparity=0, numDisparities=256, blockSize=3, P1=8*3*3, P2=32*3*3, disp12MaxDiff=10, uniquenessRatio=10, speckleWindowSize=150, speckleRange=32)
-adjustExposure(0)
 
 def adjustNumDisp(num):
     global stereoBM
@@ -520,6 +505,24 @@ def processCapture(leftFrame,rightFrame,algor,downscale,relative,cmap):
         }
         disparity = cv.cvtColor(np.uint8(cmaps[cmap](disparity)*255),cv.COLOR_RGBA2BGR)
     return disparity
+
+if(checkCams()):
+    adjustExposure(0)
+    leftCam.set(cv.CAP_PROP_SHARPNESS,200)
+    rightCam.set(cv.CAP_PROP_SHARPNESS,200)
+    leftCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+    leftCam.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+    rightCam.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+    rightCam.set(cv.CAP_PROP_FRAME_HEIGHT,480)
+    # leftCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+    # rightCam.set(cv.CAP_PROP_AUTO_EXPOSURE,0.75)
+else:
+    leftCam.release()
+    rightCam.release()
+    print(f'No Webcams')
+
+
+    
 
 if __name__ == "__main__":
 
